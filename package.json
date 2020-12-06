@@ -1,0 +1,30 @@
+{
+  "name": "linkingservice_backend",
+  "version": "1.0.0",
+  "description": "Linking Service Backend APIs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ayobamiu/LinkingService.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ayobamiu/LinkingService/issues"
+  },
+  "homepage": "https://github.com/Ayobamiu/LinkingService#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.11.4",
+    "multer": "^1.4.2",
+    "validator": "^13.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}
