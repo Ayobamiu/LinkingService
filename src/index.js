@@ -1,10 +1,4 @@
-//import
-const express = require("express");
-//create express App
-const app = express();
-
-//tell express to pass incoming request body and send to us in json format
-app.use(express.json());
+const app = require("./app");
 
 //App listen to a port
 app.listen(3001, () => {
