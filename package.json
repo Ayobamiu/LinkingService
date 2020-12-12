@@ -4,8 +4,11 @@
   "description": "Linking Service Backend APIs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon -r dotenv/config src/index.js",
+    "test": "jest --watch --runInBand"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "repository": {
     "type": "git",
@@ -18,6 +21,7 @@
   },
   "homepage": "https://github.com/Ayobamiu/LinkingService#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.4",
@@ -25,6 +29,11 @@
     "validator": "^13.5.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.6"
+    "dotenv": "^8.2.0",
+    "env-cmd": "^8.0.2",
+    "eslint": "^7.15.0",
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.6",
+    "supertest": "^6.0.1"
   }
 }
