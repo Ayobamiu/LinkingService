@@ -10,7 +10,7 @@ const userOne = {
   password: "userOne!!",
   tokens: [
     {
-      token: jwt.sign({ _id: userOneID }, "myjwtsecretkey"),
+      token: jwt.sign({ _id: userOneID }, process.env.JWT_SECRET),
     },
   ],
 };
@@ -23,7 +23,7 @@ const userTwo = {
   password: "usertwo!!",
   tokens: [
     {
-      token: jwt.sign({ _id: userTwoID }, "myjwtsecretkey"),
+      token: jwt.sign({ _id: userTwoID }, process.env.JWT_SECRET),
     },
   ],
 };
