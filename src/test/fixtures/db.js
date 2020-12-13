@@ -9,9 +9,24 @@ const userOne = {
   email: "user@one.com",
   password: "userOne!!",
   stageName: "user One",
+  slug: "@userOne",
   tokens: [
     {
       token: jwt.sign({ _id: userOneID }, process.env.JWT_SECRET),
+    },
+  ],
+};
+
+const userToFollowID = new mongoose.Types.ObjectId();
+const userToFollow = {
+  _id: userToFollowID,
+  email: "usertofollow@one.com",
+  password: "userToFollow!!",
+  stageName: "user One",
+  slug: "@userToFollow",
+  tokens: [
+    {
+      token: jwt.sign({ _id: userToFollowID }, process.env.JWT_SECRET),
     },
   ],
 };
@@ -41,6 +56,7 @@ const setUpDatabase = async () => {
   await DigitalPlatform.deleteMany();
   await new User(userOne).save();
   await new User(userTwo).save();
+  await new User(userToFollow).save();
   await new DigitalPlatform(platformOne).save();
 };
 
@@ -50,5 +66,7 @@ module.exports = {
   setUpDatabase,
   userTwoID,
   userTwo,
+  userToFollowID,
+  userToFollow,
   platformOneID,
 };
