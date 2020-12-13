@@ -15,4 +15,10 @@ router.post(
   DigitalPlatformController.addDigitalPlatform
 );
 
+router.delete(
+  "/:platformId/remove",
+  auth,
+  DigitalPlatformController.deleteDigitalPlatform
+);
+
 module.exports = router;
