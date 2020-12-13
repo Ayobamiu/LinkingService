@@ -1,5 +1,6 @@
 const ArtistView = require("../models/artistViews.model");
 const DigitalPlatform = require("../models/digitalPlatforms.model");
+const Follow = require("../models/follows.model");
 const User = require("../models/users.model");
 
 /**
@@ -20,7 +21,7 @@ class ArtistController {
    */
   static async viewArtist(req, res) {
     try {
-      const artist = await User.findOneAndUpdate(
+      await User.findOneAndUpdate(
         {
           slug: req.params.slug,
         },
@@ -30,10 +31,44 @@ class ArtistController {
         select: "_id name link -artist",
         model: DigitalPlatform,
       });
-      await ArtistView.create({ artist: artist._id });
-      return res.status(201).send(artist);
+      const artistView = await ArtistView.create({ artist: artist._id });
+      return res.status(201).send(artistView);
     } catch (error) {
       return res.status(400).send();
+    }
+  }
+
+  /**
+   * Follow Artist
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ArtistController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async followArtist(req, res) {
+    try {
+      let follow = await Follow.findOneAndDelete({
+        follower: req.user._id,
+        artist: req.params.artistId,
+      });
+      if (!follow) {
+        follow = await Follow.create({
+          follower: req.user._id,
+          artist: req.params.artistId,
+        });
+        await User.findByIdAndUpdate(req.params.artistId, {
+          $inc: { followerCount: 1 },
+        });
+        return res.status(201).send(follow);
+      }
+      await User.findByIdAndUpdate(req.params.artistId, {
+        $inc: { followerCount: -1 },
+      });
+
+      return res.status(201).send(follow);
+    } catch (error) {
+      return res.status(500).send();
     }
   }
 }
