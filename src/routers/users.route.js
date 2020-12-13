@@ -2,6 +2,10 @@ const express = require("express");
 const auth = require("../middlewares/auth.middleware");
 const User = require("../models/users.model");
 const upload = require("../bucket-config/bucket");
+const {
+  sendWelcomeEmail,
+  sendCancellationEmail,
+} = require("../emails/account");
 
 const router = express.Router();
 
@@ -17,6 +21,7 @@ router.post("/sign-up", async (req, res) => {
     const user = new User(req.body);
     const token = await user.generateAuthToken();
     await user.save();
+    sendWelcomeEmail(user.email, user.name);
     res.status(201).send({ status: "success", user, token });
   } catch (error) {
     res.status(500).send({
@@ -37,7 +42,7 @@ router.post("/login", async (req, res) => {
     res.send({ user, token });
   } catch (error) {
     res.status(400).send();
-  } 
+  }
 });
 
 //upload user images
@@ -132,6 +137,49 @@ router.post("/users/logoutAll", auth, async (req, res) => {
     res.send();
   } catch (error) {
     res.status(500).send();
+  }
+});
+
+router.get("/me", auth, async (req, res) => {
+  res.send(req.user);
+});
+
+router.delete("/me", auth, async (req, res) => {
+  try {
+    await req.user.remove();
+    sendCancellationEmail(req.user.email, req.user.name);
+    res.send(req.user);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.patch("/me", auth, async (req, res) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = [
+    "email",
+    "password",
+    "age",
+    "category",
+    "firstName",
+    "lastName",
+    "stageName",
+    "bio",
+    "location",
+  ];
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
+  if (!isValidOperation) {
+    return res.status(400).send({ error: "Invalid Updates" });
+  }
+  try {
+    updates.forEach((update) => (req.user[update] = req.body[update]));
+    await req.user.save();
+
+    res.send(req.user);
+  } catch (error) {
+    res.status(400).send(error);
   }
 });
 
