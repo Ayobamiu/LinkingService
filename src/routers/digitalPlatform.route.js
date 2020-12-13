@@ -21,4 +21,10 @@ router.delete(
   DigitalPlatformController.deleteDigitalPlatform
 );
 
+router.patch(
+  "/:platformId/update",
+  auth,
+  DigitalPlatformController.updateDigitalPlatform
+);
+
 module.exports = router;

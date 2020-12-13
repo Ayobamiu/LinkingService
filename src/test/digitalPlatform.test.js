@@ -34,6 +34,24 @@ test("Should not add a new digital platform if user is not authenticated", async
     .expect(401);
 });
 
+test("Should update a digital platform", async () => {
+  const response = await request(app)
+    .patch("/platforms/" + platformOneID + "/update")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .send({ link: "www.newtest.com" })
+    .expect(200);
+
+  //Assert that a new user has been created
+  const platform = await DigitalPlatform.findById(response.body._id);
+  expect(platform.link).toBe("www.newtest.com");
+});
+
+test("Should not update a digital platform if user is not authenticated", async () => {
+  const response = await request(app)
+    .patch("/platforms/" + platformOneID + "/update")
+    .expect(401);
+});
+
 test("Should delete a digital platform", async () => {
   const response = await request(app)
     .delete("/platforms/" + platformOneID + "/remove")
