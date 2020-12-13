@@ -8,11 +8,12 @@ const ArtistViewSchema = mongoose.Schema(
       required: true,
     },
     visitor: {
-      type: mongoose.Schema.Types.ObjectId, 
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
     visitorLocation: {
       type: String,
+      default: "Earth",
     },
   },
   { timestamps: true }
