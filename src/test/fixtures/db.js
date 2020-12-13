@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const User = require("../../models/users.model");
+const DigitalPlatform = require("../../models/digitalPlatforms.model");
 
 const userOneID = new mongoose.Types.ObjectId();
 const userOne = {
@@ -25,12 +26,20 @@ const userTwo = {
   ],
 };
 
-
+const platformOneID = new mongoose.Types.ObjectId();
+const platformOne = {
+  _id: platformOneID,
+  artist: userOneID,
+  name: "Testing Platform",
+  link: "www.test.com",
+};
 
 const setUpDatabase = async () => {
   await User.deleteMany();
+  await DigitalPlatform.deleteMany();
   await new User(userOne).save();
   await new User(userTwo).save();
+  await new DigitalPlatform(platformOne).save();
 };
 
 module.exports = {
@@ -39,4 +48,5 @@ module.exports = {
   setUpDatabase,
   userTwoID,
   userTwo,
+  platformOneID,
 };
