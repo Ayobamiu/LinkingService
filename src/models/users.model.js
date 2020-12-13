@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const slugify = require("slugify");
+var uniqueSlug = require("unique-slug");
+
+// var randomSlug = uniqueSlug()
+// var fileSlug = uniqueSlug('/etc/passwd')
 
 const userSchema = mongoose.Schema(
   {
@@ -16,6 +21,10 @@ const userSchema = mongoose.Schema(
       type: String,
     },
     stageName: {
+      type: String,
+      required: true,
+    },
+    slug: {
       type: String,
     },
     email: {
@@ -60,8 +69,18 @@ const userSchema = mongoose.Schema(
       },
     ],
   },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  },
   { timestamps: true }
 );
+
+userSchema.virtual("platforms", {
+  ref: "DigitalPlatform",
+  localField: "_id",
+  foreignField: "artist",
+});
 
 userSchema.methods.toJSON = function () {
   const user = this;
@@ -97,6 +116,16 @@ userSchema.statics.findByCredentials = async (email, password) => {
 
 userSchema.pre("save", async function (next) {
   const user = this;
+  // user.slug =
+  //   "@" +
+  //   slugify(user.stageName, {
+  //     replacement: "_", // replace spaces with replacement character, defaults to `-`
+  //     remove: undefined, // remove characters that match regex, defaults to `undefined`
+  //     lower: true, // convert to lower case, defaults to `false`
+  //     strict: true, // strip special characters except replacement, defaults to `false`
+  //     locale: "en", // language code of the locale to use
+  //   });
+  user.slug = "@" + uniqueSlug(user.stageName);
   if (user.isModified("password")) {
     user.password = await bcrypt.hash(user.password, 8);
   }

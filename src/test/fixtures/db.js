@@ -8,6 +8,7 @@ const userOne = {
   _id: userOneID,
   email: "user@one.com",
   password: "userOne!!",
+  stageName: "user One",
   tokens: [
     {
       token: jwt.sign({ _id: userOneID }, process.env.JWT_SECRET),
@@ -19,6 +20,7 @@ const userTwo = {
   _id: userTwoID,
   email: "user@two.com",
   password: "usertwo!!",
+  stageName: "user Two",
   tokens: [
     {
       token: jwt.sign({ _id: userTwoID }, process.env.JWT_SECRET),
