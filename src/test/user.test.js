@@ -53,3 +53,52 @@ test("Should not login non-existing user", async () => {
     .expect(400);
 });
 
+test("Should get profile for user", async () => {
+  await request(app)
+    .get("/auth/me")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .send()
+    .expect(200);
+});
+
+test("Should not get profile for unauthenticated user", async () => {
+  await request(app).get("/auth/me").send().expect(401);
+});
+
+test("Should update valid user feild", async () => {
+  await request(app)
+    .patch("/auth/me")
+    .send({
+      firstName: "Updated name",
+    })
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .expect(200);
+  const user = await User.findById(userOneID);
+  expect(user.firstName).toEqual("Updated name");
+});
+
+test("Should not update invalid user feild", async () => {
+  await request(app)
+    .patch("/auth/me")
+    .send({
+      state: "Lagos",
+    })
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .expect(400);
+});
+
+test("Should delete account for user", async () => {
+  const response = await request(app)
+    .delete("/auth/me")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .send()
+    .expect(200);
+
+  //Assert that user is no more in the database
+  const user = await User.findById(userOneID);
+  expect(user).toBeNull();
+});
+
+test("Should not delete account for unauthenticated user", async () => {
+  await request(app).delete("/auth/me").send().expect(401);
+});
