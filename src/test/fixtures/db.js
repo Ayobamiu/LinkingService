@@ -5,7 +5,6 @@ const User = require("../../models/users.model");
 const userOneID = new mongoose.Types.ObjectId();
 const userOne = {
   _id: userOneID,
-  name: "UserOne",
   email: "user@one.com",
   password: "userOne!!",
   tokens: [
@@ -15,10 +14,8 @@ const userOne = {
   ],
 };
 const userTwoID = new mongoose.Types.ObjectId();
-const userThreeID = new mongoose.Types.ObjectId();
 const userTwo = {
   _id: userTwoID,
-  name: "UserTwo",
   email: "user@two.com",
   password: "usertwo!!",
   tokens: [
@@ -28,23 +25,18 @@ const userTwo = {
   ],
 };
 
+
+
 const setUpDatabase = async () => {
   await User.deleteMany();
   await new User(userOne).save();
   await new User(userTwo).save();
-};
-const clearDatabse = async () => {
-  await User.deleteOne({ _id: userOneID });
-  await User.deleteOne({ _id: userTwoID });
-  await User.deleteOne({ _id: userThreeID });
 };
 
 module.exports = {
   userOneID,
   userOne,
   setUpDatabase,
-  clearDatabse,
   userTwoID,
   userTwo,
-  userThreeID,
 };

@@ -1,6 +1,7 @@
 const express = require("express");
 const auth = require("../middlewares/auth.middleware");
 const User = require("../models/users.model");
+const upload = require("../bucket-config/bucket");
 
 const router = express.Router();
 
@@ -36,10 +37,72 @@ router.post("/login", async (req, res) => {
     res.send({ user, token });
   } catch (error) {
     res.status(400).send();
+  } 
+});
+
+//upload user images
+router.post(
+  "/me/images",
+  auth,
+  upload.fields([
+    { name: "profilePhoto", maxCount: 1 },
+    { name: "coverPhoto", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    req.user.profilePhoto = req.files.profilePhoto[0].location;
+    req.user.coverPhoto = req.files.coverPhoto[0].location;
+    try {
+      await req.user.save();
+      res.send(req.user);
+    } catch (error) {
+      res.status(400).send();
+    }
+  }
+);
+
+//update user images
+router.patch(
+  "/me/images",
+  auth,
+  upload.fields([
+    { name: "profilePhoto", maxCount: 1 },
+    { name: "coverPhoto", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    req.user.profilePhoto = req.files.profilePhoto[0].location;
+    req.user.coverPhoto = req.files.coverPhoto[0].location;
+    try {
+      await req.user.save();
+      res.send(req.user);
+    } catch (error) {
+      res.status(400).send();
+    }
+  }
+);
+
+//delete user profilePhoto
+router.delete("/me/profilePhoto", auth, async (req, res) => {
+  req.user.profilePhoto = undefined;
+  try {
+    await req.user.save();
+    res.send(req.user);
+  } catch (error) {
+    res.status(400).send();
   }
 });
 
-router.get("/users", auth, async (req, res) => {
+//delete user coverPhoto
+router.delete("/me/coverPhoto", auth, async (req, res) => {
+  req.user.coverPhoto = undefined;
+  try {
+    await req.user.save();
+    res.send(req.user);
+  } catch (error) {
+    res.status(400).send();
+  }
+});
+
+router.get("/users", async (req, res) => {
   const users = await User.find({});
   try {
     res.send(users);

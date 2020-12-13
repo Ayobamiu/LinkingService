@@ -1,25 +1,20 @@
 const app = require("../app");
 const request = require("supertest");
 const User = require("../models/users.model");
-const mongoose = require("mongoose");
 const {
   userOneID,
   userOne,
   setUpDatabase,
-  clearDatabse,
   userTwoID,
   userTwo,
-  userThreeID,
 } = require("./fixtures/db");
 
 beforeAll(setUpDatabase);
-afterAll(clearDatabse);
 
 test("Should sign up a new user", async () => {
   const response = await request(app)
     .post("/auth/sign-up")
     .send({
-      _id: userThreeID,
       firstName: "Test User",
       email: "test@user.com",
       password: "testing101",
@@ -57,3 +52,4 @@ test("Should not login non-existing user", async () => {
     })
     .expect(400);
 });
+
