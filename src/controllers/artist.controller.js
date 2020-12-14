@@ -1,6 +1,8 @@
+const jwt = require("jsonwebtoken");
 const ArtistView = require("../models/artistViews.model");
 const DigitalPlatform = require("../models/digitalPlatforms.model");
 const Follow = require("../models/follows.model");
+const Like = require("../models/likes.model");
 const User = require("../models/users.model");
 
 /**
@@ -67,6 +69,42 @@ class ArtistController {
       });
 
       return res.status(201).send(follow);
+    } catch (error) {
+      return res.status(500).send();
+    }
+  }
+
+  /**
+   * Like Artist
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ArtistController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async likeArtist(req, res) {
+    const likeData = {
+      artist: req.params.artistId,
+    };
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.replace("Bearer ", "");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      likeData.visitor = req.headers.authorization ? decoded._id : null;
+    }
+    try {
+      let like = await Like.findOneAndDelete(likeData);
+      if (!like) {
+        like = await Like.create(likeData);
+        await User.findByIdAndUpdate(req.params.artistId, {
+          $inc: { likeCount: 1 },
+        });
+        return res.status(201).send(like);
+      }
+      await User.findByIdAndUpdate(req.params.artistId, {
+        $inc: { likeCount: -1 },
+      });
+
+      return res.status(201).send(like);
     } catch (error) {
       return res.status(500).send();
     }
