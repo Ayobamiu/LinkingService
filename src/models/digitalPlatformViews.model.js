@@ -7,11 +7,6 @@ const DigitalPlatformViewSchema = mongoose.Schema(
       ref: "digitalPlatform",
       required: true,
     },
-    artist: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
     visitor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

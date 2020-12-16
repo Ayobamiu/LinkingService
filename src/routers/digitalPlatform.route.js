@@ -24,5 +24,6 @@ router.patch(
   auth,
   DigitalPlatformController.updateDigitalPlatform
 );
+router.get("/:platformId", DigitalPlatformController.viewDigitalPlatform);
 
 module.exports = router;

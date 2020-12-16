@@ -1,4 +1,6 @@
+const jwt = require("jsonwebtoken");
 const DigitalPlatform = require("../models/digitalPlatforms.model");
+const DigitalPlatformView = require("../models/digitalPlatformViews.model");
 
 /**
  *Contains DigitalPlatform Controller
@@ -46,6 +48,40 @@ class DigitalPlatformController {
       if (!digitalPlatform) {
         return res.status(404).send();
       }
+      return res.status(200).send(digitalPlatform);
+    } catch (error) {
+      return res.status(500).send();
+    }
+  }
+
+  /**
+   * View a DigitalPlatform
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof DigitalPlatformController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async viewDigitalPlatform(req, res) {
+    const digitalPlatformViewData = {
+      digitalPlatform: req.params.platformId,
+    };
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.replace("Bearer ", "");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      digitalPlatformViewData.visitor = req.headers.authorization
+        ? decoded._id
+        : null;
+    }
+    try {
+      const digitalPlatform = await DigitalPlatform.findByIdAndUpdate(
+        { _id: req.params.platformId },
+        { $inc: { viewCount: 1 } }
+      );
+      if (!digitalPlatform) {
+        return res.status(404).send();
+      }
+      await DigitalPlatformView.create({ ...digitalPlatformViewData });
       return res.status(200).send(digitalPlatform);
     } catch (error) {
       return res.status(500).send();
