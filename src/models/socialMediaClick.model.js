@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const DigitalPlatformViewSchema = mongoose.Schema(
+const socialMediaClickSchema = mongoose.Schema(
   {
-    digitalPlatform: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "digitalPlatform",
       required: true,
@@ -11,15 +11,19 @@ const DigitalPlatformViewSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    socialMedia: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SocialMedia",
+    },
     visitorLocation: {
       type: String,
     },
   },
   { timestamps: true }
 );
-const DigitalPlatformView = mongoose.model(
-  "DigitalPlatformView",
-  DigitalPlatformViewSchema
+const socialMediaClick = mongoose.model(
+  "socialMediaClick",
+  socialMediaClickSchema
 );
 
-module.exports = DigitalPlatformView;
+module.exports = socialMediaClick;

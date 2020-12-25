@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const DigitalPlatform = require("../models/digitalPlatforms.model");
-const DigitalPlatformView = require("../models/digitalPlatformViews.model");
+const DigitalPlatformView = require("../models/digitalPlatformClicks.model");
+const User = require("../models/users.model");
 
 /**
  *Contains DigitalPlatform Controller
@@ -76,11 +77,14 @@ class DigitalPlatformController {
     try {
       const digitalPlatform = await DigitalPlatform.findByIdAndUpdate(
         { _id: req.params.platformId },
-        { $inc: { viewCount: 1 } }
+        { $inc: { clickCount: 1 } }
       );
       if (!digitalPlatform) {
         return res.status(404).send();
       }
+      await User.findByIdAndUpdate(digitalPlatform.artist, {
+        $inc: { clickCount: 1 },
+      });
       await DigitalPlatformView.create({ ...digitalPlatformViewData });
       return res.status(200).send(digitalPlatform);
     } catch (error) {
