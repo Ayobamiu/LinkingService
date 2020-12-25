@@ -14,7 +14,7 @@ const DigitalPlatformSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
-    viewCount: {
+    clickCount: {
       type: Number, 
       default: 0,
     },
