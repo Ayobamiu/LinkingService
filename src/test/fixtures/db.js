@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const User = require("../../models/users.model");
 const DigitalPlatform = require("../../models/digitalPlatforms.model");
+const SocialMedia = require("../../models/socialMedia.model");
 
 const userOneID = new mongoose.Types.ObjectId();
 const userOne = {
@@ -51,6 +52,13 @@ const platformOne = {
   link: "www.test.com",
 };
 
+const socialOneID = new mongoose.Types.ObjectId();
+const socialOne = {
+  _id: socialOneID,
+  user: userOneID,
+  link: "www.test.com",
+};
+
 const setUpDatabase = async () => {
   await User.deleteMany();
   await DigitalPlatform.deleteMany();
@@ -58,6 +66,7 @@ const setUpDatabase = async () => {
   await new User(userTwo).save();
   await new User(userToFollow).save();
   await new DigitalPlatform(platformOne).save();
+  await new SocialMedia(socialOne).save();
 };
 
 module.exports = {
@@ -69,4 +78,5 @@ module.exports = {
   userToFollowID,
   userToFollow,
   platformOneID,
+  socialOneID,
 };
