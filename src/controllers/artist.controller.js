@@ -23,7 +23,7 @@ class ArtistController {
    */
   static async viewArtist(req, res) {
     try {
-      await User.findOneAndUpdate(
+      const artist = await User.findOneAndUpdate(
         {
           slug: req.params.slug,
         },
@@ -34,7 +34,7 @@ class ArtistController {
         model: DigitalPlatform,
       });
       const artistView = await ArtistView.create({ artist: artist._id });
-      return res.status(201).send(artistView);
+      return res.status(201).send(artist);
     } catch (error) {
       return res.status(400).send();
     }
