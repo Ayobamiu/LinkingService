@@ -13,25 +13,11 @@ router.post(
   AddSocialMediaPlatform.myValidationResult,
   SocialMediaPlatformController.addSocialMediaPlatform
 );
-// router.post(
-//   "/add",
-//   auth,
-//   AddDigitalPlatform.validateData(),
-//   AddDigitalPlatform.myValidationResult,
-//   DigitalPlatformController.addDigitalPlatform
-// );
 
-// router.delete(
-//   "/:platformId/remove",
-//   auth,
-//   DigitalPlatformController.deleteDigitalPlatform
-// );
-
-// router.patch(
-//   "/:platformId/update",
-//   auth,
-//   DigitalPlatformController.updateDigitalPlatform
-// );
-// router.get("/:platformId", DigitalPlatformController.viewDigitalPlatform);
+router.delete(
+  "/:socialId/remove",
+  auth,
+  SocialMediaPlatformController.deleteSocialMediaPlatform
+);
 
 module.exports = router;

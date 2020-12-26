@@ -33,28 +33,28 @@ class SocialMediaPlatformController {
     }
   }
 
-  //   /**
-  //    * Delete a DigitalPlatform
-  //    * @param {Request} req - Response object.
-  //    * @param {Response} res - The payload.
-  //    * @memberof SocialMediaPlatformController
-  //    * @returns {JSON} - A JSON success response.
-  //    *
-  //    */
-  //   static async deleteDigitalPlatform(req, res) {
-  //     try {
-  //       const digitalPlatform = await DigitalPlatform.findOneAndDelete({
-  //         _id: req.params.platformId,
-  //         artist: req.user._id,
-  //       });
-  //       if (!digitalPlatform) {
-  //         return res.status(404).send();
-  //       }
-  //       return res.status(200).send(digitalPlatform);
-  //     } catch (error) {
-  //       return res.status(500).send();
-  //     }
-  //   }
+  /**
+   * Delete a socialMediaPlatform
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof SocialMediaPlatformController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async deleteSocialMediaPlatform(req, res) {
+    try {
+      const socialMediaPlatform = await SocialMedia.findOneAndDelete({
+        _id: req.params.socialId,
+        user: req.user._id,
+      });
+      if (!socialMediaPlatform) {
+        return res.status(404).send();
+      }
+      return res.status(200).send(socialMediaPlatform);
+    } catch (error) {
+      return res.status(500).send();
+    }
+  }
 
   //   /**
   //    * View a DigitalPlatform
