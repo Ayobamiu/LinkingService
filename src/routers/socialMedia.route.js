@@ -19,5 +19,6 @@ router.delete(
   auth,
   SocialMediaPlatformController.deleteSocialMediaPlatform
 );
+router.get("/:socialId", SocialMediaPlatformController.viewSocialMediaPlatform);
 
 module.exports = router;

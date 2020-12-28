@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 
 const socialMediaClickSchema = mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "digitalPlatform",
-      required: true,
-    },
     visitor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
