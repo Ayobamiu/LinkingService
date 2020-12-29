@@ -3,6 +3,7 @@ const DigitalPlatform = require("../models/digitalPlatforms.model");
 const DigitalPlatformView = require("../models/digitalPlatformClicks.model");
 const User = require("../models/users.model");
 const SocialMedia = require("../models/socialMedia.model");
+const socialMediaClick = require("../models/socialMediaClick.model");
 
 /**
  *Contains SocialMediaPlatform Controller
@@ -56,42 +57,44 @@ class SocialMediaPlatformController {
     }
   }
 
-  //   /**
-  //    * View a DigitalPlatform
-  //    * @param {Request} req - Response object.
-  //    * @param {Response} res - The payload.
-  //    * @memberof SocialMediaPlatformController
-  //    * @returns {JSON} - A JSON success response.
-  //    *
-  //    */
-  //   static async viewDigitalPlatform(req, res) {
-  //     const digitalPlatformViewData = {
-  //       digitalPlatform: req.params.platformId,
-  //     };
-  //     if (req.headers.authorization) {
-  //       const token = req.headers.authorization.replace("Bearer ", "");
-  //       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  //       digitalPlatformViewData.visitor = req.headers.authorization
-  //         ? decoded._id
-  //         : null;
-  //     }
-  //     try {
-  //       const digitalPlatform = await DigitalPlatform.findByIdAndUpdate(
-  //         { _id: req.params.platformId },
-  //         { $inc: { clickCount: 1 } }
-  //       );
-  //       if (!digitalPlatform) {
-  //         return res.status(404).send();
-  //       }
-  //       await User.findByIdAndUpdate(digitalPlatform.artist, {
-  //         $inc: { clickCount: 1 },
-  //       });
-  //       await DigitalPlatformView.create({ ...digitalPlatformViewData });
-  //       return res.status(200).send(digitalPlatform);
-  //     } catch (error) {
-  //       return res.status(500).send();
-  //     }
-  //   }
+  /**
+   * View a SocialMediaPlatform
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof SocialMediaPlatformController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async viewSocialMediaPlatform(req, res) {
+    const socialMediaPlatformViewData = {
+      socialMedia: req.params.socialId,
+    };
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.replace("Bearer ", "");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      socialMediaPlatformViewData.visitor = req.headers.authorization
+        ? decoded._id
+        : null;
+    }
+    try {
+      const socialMediaPlatform = await SocialMedia.findByIdAndUpdate(
+        { _id: req.params.socialId },
+        { $inc: { clickCount: 1 } }
+      );
+      if (!socialMediaPlatform) {
+        return res.status(404).send();
+      }
+      await User.findByIdAndUpdate(socialMediaPlatform.user, {
+        $inc: { clickCount: 1 },
+      });
+      await socialMediaClick.create({
+        ...socialMediaPlatformViewData,
+      });
+      return res.status(200).send(socialMediaPlatform);
+    } catch (error) {
+      return res.status(500).send();
+    }
+  }
 
   //   /**
   //    * Update a DigitalPlatform
