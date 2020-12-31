@@ -3,6 +3,7 @@ const ArtistView = require("../models/artistViews.model");
 const DigitalPlatform = require("../models/digitalPlatforms.model");
 const Follow = require("../models/follows.model");
 const Like = require("../models/likes.model");
+const Product = require("../models/product.model");
 const User = require("../models/users.model");
 
 /**
@@ -35,6 +36,31 @@ class ArtistController {
       });
       const artistView = await ArtistView.create({ artist: artist._id });
       return res.status(201).send(artist);
+    } catch (error) {
+      return res.status(400).send();
+    }
+  }
+  /**
+   * View Artist Prodcut Page
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ArtistController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async viewArtistProducts(req, res) {
+    try {
+      const user = await User.findOneAndUpdate(
+        {
+          slug: req.params.slug,
+        },
+        { $inc: { viewCount: 1 } }
+      ).populate({
+        path: "products",
+        select: "_id images title description price cta -user",
+        model: Product,
+      });
+      return res.status(200).send(user.products);
     } catch (error) {
       return res.status(400).send();
     }

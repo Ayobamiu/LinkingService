@@ -4,6 +4,7 @@ const auth = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
+router.get("/:slug/store", ArtistController.viewArtistProducts);
 router.get("/:slug", ArtistController.viewArtist);
 router.post("/:artistId/follow", auth, ArtistController.followArtist);
 router.post("/:artistId/like", ArtistController.likeArtist);

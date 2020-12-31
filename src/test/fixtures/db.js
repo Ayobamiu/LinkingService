@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const User = require("../../models/users.model");
 const DigitalPlatform = require("../../models/digitalPlatforms.model");
 const SocialMedia = require("../../models/socialMedia.model");
+const Product = require("../../models/product.model");
 
 const userOneID = new mongoose.Types.ObjectId();
 const userOne = {
@@ -51,6 +52,15 @@ const platformOne = {
   name: "Testing Platform",
   link: "www.test.com",
 };
+const productOneID = new mongoose.Types.ObjectId();
+const productOne = {
+  _id: productOneID,
+  user: userOneID,
+  title: "First Product",
+  description: "description of First Product",
+  cta: "5fd60ab079d63b40c0db7e79",
+  price: 60,
+};
 
 const socialOneID = new mongoose.Types.ObjectId();
 const socialOne = {
@@ -67,6 +77,7 @@ const setUpDatabase = async () => {
   await new User(userToFollow).save();
   await new DigitalPlatform(platformOne).save();
   await new SocialMedia(socialOne).save();
+  await new Product(productOne).save();
 };
 
 module.exports = {
