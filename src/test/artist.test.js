@@ -1,21 +1,23 @@
 const app = require("../app");
 const request = require("supertest");
-const DigitalPlatform = require("../models/digitalPlatforms.model");
 
 const {
-  userOne,
   setUpDatabase,
   userToFollowID,
   userToFollow,
+  userOneID,
 } = require("./fixtures/db");
 const User = require("../models/users.model");
 
 beforeAll(setUpDatabase);
 
-test("Should not add a new artistView when artist is not present", async () => {
-  const response = await request(app)
-    .post("/artists/" + userOne.slug)
-    .expect(404);
+test("Should add a new artistView when artist is present", async () => {
+  const user = await User.findById(userOneID);
+  await request(app).get(`/artists/${user.slug}`).expect(201);
+});
+test("Should return products for a user", async () => {
+  const user = await User.findById(userOneID);
+  await request(app).get(`/artists/${user.slug}/store`).expect(200);
 });
 
 test("Should add a new follow, if it doesn't exist", async () => {

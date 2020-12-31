@@ -86,6 +86,12 @@ userSchema.virtual("platforms", {
   foreignField: "artist",
 });
 
+userSchema.virtual("products", {
+  ref: "Product",
+  localField: "_id",
+  foreignField: "user",
+});
+
 userSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
