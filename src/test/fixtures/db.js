@@ -90,4 +90,5 @@ module.exports = {
   userToFollow,
   platformOneID,
   socialOneID,
+  productOne,
 };
