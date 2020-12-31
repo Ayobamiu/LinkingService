@@ -18,6 +18,10 @@ const ProductSchema = mongoose.Schema(
     price: {
       type: Number,
     },
+    shippingFee: {
+      type: Number,
+      default: 0,
+    },
     cta: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CTA",

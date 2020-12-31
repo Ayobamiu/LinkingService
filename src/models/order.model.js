@@ -17,6 +17,9 @@ const OrderSchema = mongoose.Schema(
       ref: "User",
       required: true,
     },
+    amount: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );

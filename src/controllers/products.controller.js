@@ -1,3 +1,4 @@
+const Order = require("../models/order.model");
 const Product = require("../models/product.model");
 
 /**
@@ -32,6 +33,31 @@ class ProductController {
         images,
       });
       return res.status(201).send(product);
+    } catch (error) {
+      return res.status(400).send();
+    }
+  }
+
+  /**
+   * Order a Product
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async orderProduct(req, res) {
+    try {
+      const product = await Product.findById(req.params.productId);
+      if (!product) {
+        return res.status(404).send({ message: "product is unavailable" });
+      }
+      const order = await Order.create({
+        product: req.params.productId,
+        buyer: req.user._id,
+        amount: product.price + product.shippingFee,
+      });
+      return res.status(201).send(order);
     } catch (error) {
       return res.status(400).send();
     }

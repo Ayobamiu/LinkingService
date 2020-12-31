@@ -8,6 +8,7 @@ const {
   userOneID,
 } = require("./fixtures/db");
 const Product = require("../models/product.model");
+const Order = require("../models/order.model");
 
 beforeAll(setUpDatabase);
 
@@ -50,6 +51,23 @@ test("Should not return a product if product is absent", async () => {
     .get("/products/" + userOneID)
     .expect(404);
 });
+
+test("Should add a new order", async () => {
+  const response = await request(app)
+    .post("/products/" + productOne._id + "/order")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .expect(201);
+
+  //Assert that product was created
+  const order = await Order.findById(response.body._id);
+  expect(order).not.toBeNull();
+}, 30000);
+
+test("Should not add a new order if user is not authenticated", async () => {
+  const response = await request(app)
+    .post("/products/" + productOne._id + "/order")
+    .expect(401);
+}, 30000);
 
 // test("Should not add a new digital platform if user is not authenticated", async () => {
 //   const response = await request(app)
