@@ -16,6 +16,7 @@ router.post(
 );
 
 router.delete("/:productId/remove", auth, ProductController.deleteProduct);
+router.post("/:productId/order", auth, ProductController.orderProduct);
 
 // router.patch(
 //   "/:platformId/update",
