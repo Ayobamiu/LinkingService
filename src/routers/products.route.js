@@ -15,11 +15,7 @@ router.post(
   ProductController.addProduct
 );
 
-// router.delete(
-//   "/:platformId/remove",
-//   auth,
-//   DigitalPlatformController.deleteDigitalPlatform
-// );
+router.delete("/:productId/remove", auth, ProductController.deleteProduct);
 
 // router.patch(
 //   "/:platformId/update",

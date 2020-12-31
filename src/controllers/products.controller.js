@@ -37,28 +37,28 @@ class ProductController {
     }
   }
 
-  // /**
-  //  * Delete a DigitalPlatform
-  //  * @param {Request} req - Response object.
-  //  * @param {Response} res - The payload.
-  //  * @memberof DigitalPlatformController
-  //  * @returns {JSON} - A JSON success response.
-  //  *
-  //  */
-  // static async deleteDigitalPlatform(req, res) {
-  //   try {
-  //     const digitalPlatform = await DigitalPlatform.findOneAndDelete({
-  //       _id: req.params.platformId,
-  //       artist: req.user._id,
-  //     });
-  //     if (!digitalPlatform) {
-  //       return res.status(404).send();
-  //     }
-  //     return res.status(200).send(digitalPlatform);
-  //   } catch (error) {
-  //     return res.status(500).send();
-  //   }
-  // }
+  /**
+   * Delete a Product
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async deleteProduct(req, res) {
+    try {
+      const product = await Product.findOneAndDelete({
+        _id: req.params.productId,
+        user: req.user._id,
+      });
+      if (!product) {
+        return res.status(404).send();
+      }
+      return res.status(200).send(product);
+    } catch (error) {
+      return res.status(500).send();
+    }
+  }
 
   /**
    * View a Product

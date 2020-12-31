@@ -21,7 +21,7 @@ test("Should add a new product", async () => {
     .field("price", "50")
     .expect(201);
 
-  //Assert that a new user has been created
+  //Assert that product was deleted
   const product = await Product.findById(response.body._id);
   expect(product).not.toBeNull();
 
@@ -79,19 +79,18 @@ test("Should not return a product if product is absent", async () => {
 //     .expect(401);
 // });
 
-// test("Should delete a digital platform", async () => {
-//   const response = await request(app)
-//     .delete("/platforms/" + platformOneID + "/remove")
-//     .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
-//     .expect(200);
+test("Should delete a product", async () => {
+  const response = await request(app)
+    .delete("/products/" + productOne._id + "/remove")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .expect(200);
 
-//   //Assert that a new user has been created
-//   const platform = await DigitalPlatform.findById(response.body._id);
-//   expect(platform).toBeNull();
-// });
+  const product = await Product.findById(response.body._id);
+  expect(product).toBeNull();
+});
 
-// test("Should not delete a digital platform if user is not authenticated", async () => {
-//   const response = await request(app)
-//     .delete("/platforms/" + platformOneID + "/remove")
-//     .expect(401);
-// });
+test("Should not delete a product if user is not authenticated", async () => {
+  await request(app)
+    .delete("/products/" + productOne._id + "/remove")
+    .expect(401);
+});
