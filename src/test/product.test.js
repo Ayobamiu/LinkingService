@@ -1,7 +1,12 @@
 const app = require("../app");
 const request = require("supertest");
 
-const { userOne, setUpDatabase } = require("./fixtures/db");
+const {
+  userOne,
+  setUpDatabase,
+  productOne,
+  userOneID,
+} = require("./fixtures/db");
 const Product = require("../models/product.model");
 
 beforeAll(setUpDatabase);
@@ -33,6 +38,18 @@ test("Should not add a new product if user is not authenticated", async () => {
     .field("price", "50")
     .expect(401);
 }, 30000);
+
+test("Should return a product", async () => {
+  await request(app)
+    .get("/products/" + productOne._id)
+    .expect(200);
+});
+
+test("Should not return a product if product is absent", async () => {
+  await request(app)
+    .get("/products/" + userOneID)
+    .expect(404);
+});
 
 // test("Should not add a new digital platform if user is not authenticated", async () => {
 //   const response = await request(app)

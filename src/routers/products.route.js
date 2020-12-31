@@ -26,6 +26,6 @@ router.post(
 //   auth,
 //   DigitalPlatformController.updateDigitalPlatform
 // );
-// router.get("/:platformId", DigitalPlatformController.viewDigitalPlatform);
+router.get("/:productId", ProductController.viewProduct);
 
 module.exports = router;
