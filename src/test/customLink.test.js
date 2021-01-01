@@ -1,6 +1,11 @@
 const app = require("../app");
 const request = require("supertest");
-const { userOne, setUpDatabase } = require("./fixtures/db");
+const {
+  userOne,
+  setUpDatabase,
+  customLinkOne,
+  customLinkTwoID,
+} = require("./fixtures/db");
 const CustomLink = require("../models/customLink.model");
 
 beforeAll(setUpDatabase);
@@ -27,21 +32,21 @@ test("Should not add a new customLink if user is not Authenticated", async () =>
     .expect(401);
 });
 
-// test("Should return a promotion", async () => {
-//   const response = await request(app)
-//     .get("/promotions/" + promotionOne._id)
-//     .expect(200);
+test("Should return a customLink", async () => {
+  const response = await request(app)
+    .get("/custom-links/" + customLinkOne._id)
+    .expect(200);
 
-//   //Assert that a new promotion has been created
-//   const promotion = await Promotion.findById(response.body._id);
-//   expect(promotion).not.toBeNull();
+  //Assert that a new customLink has been created
+  const customLink = await CustomLink.findById(response.body._id);
+  expect(customLink).not.toBeNull();
 
-//   //Assertion about the response
-//   expect(promotion.title).toBe("test ep");
-// });
+  //Assertion about the response
+  expect(customLink.title).toBe("Test Link");
+});
 
-// test("Should NOT return a promotion if it is absent", async () => {
-//   const response = await request(app)
-//     .get("/promotions/" + promotionTwoID)
-//     .expect(404);
-// });
+test("Should NOT return a customLink if it is absent", async () => {
+  await request(app)
+    .get("/custom-links/" + customLinkTwoID)
+    .expect(404);
+});
