@@ -27,6 +27,10 @@ const PromotionSchema = mongoose.Schema(
     title: {
       type: String,
     },
+    viewCount: {
+      type: Number,
+      default: 0,
+    },
     clickCount: {
       type: Number,
       default: 0,

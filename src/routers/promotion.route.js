@@ -1,15 +1,11 @@
 const express = require("express");
 const upload = require("../bucket-config/bucket");
-const ArtistController = require("../controllers/artist.controller");
 const PromotionController = require("../controllers/promotion.controller");
 const auth = require("../middlewares/auth.middleware");
 const AddPromotionValidator = require("../validations/promotion/addPromotion.validator");
 
 const router = express.Router();
 
-// router.get("/:slug/store", ArtistController.viewArtistProducts);
-// router.get("/:slug", ArtistController.viewArtist);
-// router.post("/:artistId/follow", auth, ArtistController.followArtist);
 router.post(
   "/add",
   auth,
@@ -21,5 +17,8 @@ router.post(
   AddPromotionValidator.myValidationResult,
   PromotionController.addPromotion
 );
+router.get("/:promotionId", PromotionController.viewPromotion);
+// router.get("/:slug", ArtistController.viewArtist);
+// router.post("/:artistId/follow", auth, ArtistController.followArtist);
 
 module.exports = router;

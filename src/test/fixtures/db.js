@@ -4,6 +4,7 @@ const User = require("../../models/users.model");
 const DigitalPlatform = require("../../models/digitalPlatforms.model");
 const SocialMedia = require("../../models/socialMedia.model");
 const Product = require("../../models/product.model");
+const Promotion = require("../../models/promotion.model");
 
 const userOneID = new mongoose.Types.ObjectId();
 const userOne = {
@@ -69,6 +70,15 @@ const socialOne = {
   link: "www.test.com",
 };
 
+const promotionOneID = new mongoose.Types.ObjectId();
+const promotionTwoID = new mongoose.Types.ObjectId();
+const promotionOne = {
+  _id: promotionOneID,
+  user: userOneID,
+  type: "ep",
+  title: "test ep",
+};
+
 const setUpDatabase = async () => {
   await User.deleteMany();
   await DigitalPlatform.deleteMany();
@@ -78,6 +88,7 @@ const setUpDatabase = async () => {
   await new DigitalPlatform(platformOne).save();
   await new SocialMedia(socialOne).save();
   await new Product(productOne).save();
+  await new Promotion(promotionOne).save();
 };
 
 module.exports = {
@@ -91,4 +102,6 @@ module.exports = {
   platformOneID,
   socialOneID,
   productOne,
+  promotionOne,
+  promotionTwoID,
 };
