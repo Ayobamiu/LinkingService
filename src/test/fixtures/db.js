@@ -5,6 +5,7 @@ const DigitalPlatform = require("../../models/digitalPlatforms.model");
 const SocialMedia = require("../../models/socialMedia.model");
 const Product = require("../../models/product.model");
 const Promotion = require("../../models/promotion.model");
+const CustomLink = require("../../models/customLink.model");
 
 const userOneID = new mongoose.Types.ObjectId();
 const userOne = {
@@ -78,6 +79,14 @@ const promotionOne = {
   type: "ep",
   title: "test ep",
 };
+const customLinkOneID = new mongoose.Types.ObjectId();
+const customLinkTwoID = new mongoose.Types.ObjectId();
+const customLinkOne = {
+  _id: customLinkOneID,
+  owner: userOneID,
+  title: "Test Link",
+  link: "www.ep.com",
+};
 
 const setUpDatabase = async () => {
   await User.deleteMany();
@@ -89,6 +98,7 @@ const setUpDatabase = async () => {
   await new SocialMedia(socialOne).save();
   await new Product(productOne).save();
   await new Promotion(promotionOne).save();
+  await new CustomLink(customLinkOne).save();
 };
 
 module.exports = {
@@ -104,4 +114,6 @@ module.exports = {
   productOne,
   promotionOne,
   promotionTwoID,
+  customLinkOne,
+  customLinkTwoID,
 };
