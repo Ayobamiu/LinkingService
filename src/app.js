@@ -6,6 +6,7 @@ const artistRoute = require("./routers/artist.route");
 const digitalPlatformRoute = require("./routers/digitalPlatform.route");
 const socialMediaPlatformRoute = require("./routers/socialMedia.route");
 const promotionPlatformRoute = require("./routers/promotion.route");
+const customLinkRoute = require("./routers/customLink.route");
 require("./db/mongoose");
 //create express App
 
@@ -19,6 +20,7 @@ app.use("/platforms", digitalPlatformRoute);
 app.use("/socials", socialMediaPlatformRoute);
 app.use("/artists", artistRoute);
 app.use("/promotions", promotionPlatformRoute);
+app.use("/custom-links", customLinkRoute);
 
 //tell express to pass incoming request body and send to us in json format
 // app.use(express.json());
