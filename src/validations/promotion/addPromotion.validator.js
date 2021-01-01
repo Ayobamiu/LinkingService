@@ -1,36 +1,36 @@
 const { check, validationResult } = require("express-validator");
 
 /**
- *Contains AddDigitalPlatform Validator
+ *Contains AddPromotionValidator Validator
  *
  *
  *
- * @class AddDigitalPlatform
+ * @class AddPromotionValidator
  */
-class AddDigitalPlatform {
+class AddPromotionValidator {
   /**
-   * validate AddDigitalPlatform data.
-   * @memberof AddDigitalPlatform
+   * validate AddPromotionValidator data.
+   * @memberof AddPromotionValidator
    * @returns {null} - No response.
    */
   static validateData() {
     return [
-      check("mediaPlatformSample")
+      check("type")
         .exists()
-        .withMessage("MediaPlatformSample is required")
+        .withMessage("Type is required")
         .not()
         .isEmpty()
-        .withMessage("MediaPlatformSample cannot be empty")
-        .isMongoId()
-        .withMessage("MediaPlatformSample should be an ID"),
-      check("link")
+        .withMessage("Type cannot be empty")
+        .isString()
+        .withMessage("Type should be a String"),
+      check("title")
         .exists()
-        .withMessage("Link is required")
+        .withMessage("Title is required")
         .not()
         .isEmpty()
-        .withMessage("Link cannot be empty")
-        .isURL()
-        .withMessage("Link should be a URL"),
+        .withMessage("Title cannot be empty")
+        .isString()
+        .withMessage("Title should be a String"),
     ];
   }
 
@@ -39,7 +39,7 @@ class AddDigitalPlatform {
    * @param {Request} req - Response object.
    * @param {Response} res - The payload.
    * @param {Response} next - The next parameter.
-   * @memberof AddDigitalPlatform
+   * @memberof AddPromotionValidator
    * @returns {JSON} - A JSON success response.
    */
   static async myValidationResult(req, res, next) {
@@ -55,4 +55,4 @@ class AddDigitalPlatform {
     return next();
   }
 }
-module.exports = AddDigitalPlatform;
+module.exports = AddPromotionValidator;

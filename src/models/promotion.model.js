@@ -2,19 +2,21 @@ const mongoose = require("mongoose");
 
 const PromotionSchema = mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User ",
+    },
     digitalPlatforms: [
       {
-        mediaPlatformSample: {
+        digitalPlatform: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "MediaPlatformSample",
-        },
-        link: {
-          type: String,
+          ref: "DigitalPlatform",
         },
       },
     ],
     type: {
       type: String,
+      enum: ["ep", "track", "album"],
     },
     image: {
       type: String,
@@ -23,9 +25,6 @@ const PromotionSchema = mongoose.Schema(
       type: String,
     },
     title: {
-      type: String,
-    },
-    link: {
       type: String,
     },
     clickCount: {

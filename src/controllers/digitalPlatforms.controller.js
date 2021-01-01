@@ -23,7 +23,7 @@ class DigitalPlatformController {
     try {
       const digitalPlatform = await DigitalPlatform.create({
         artist: req.user._id,
-        name: req.body.name,
+        mediaPlatformSample: req.body.mediaPlatformSample,
         link: req.body.link,
       });
       return res.status(201).send(digitalPlatform);
@@ -102,7 +102,7 @@ class DigitalPlatformController {
    */
   static async updateDigitalPlatform(req, res) {
     const updates = Object.keys(req.body);
-    const allowedUpdates = ["name", "link"];
+    const allowedUpdates = ["mediaPlatformSample", "link"];
     const isValidOperation = updates.every((update) =>
       allowedUpdates.includes(update)
     );
