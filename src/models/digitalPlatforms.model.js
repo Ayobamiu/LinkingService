@@ -5,17 +5,21 @@ const DigitalPlatformSchema = mongoose.Schema(
     artist: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
-    name: {
-      type: String,
+    mediaPlatformSample: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "MediaPlatformSample",
+    },
+    promotion: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Promotion",
     },
     link: {
       type: String,
       trim: true,
     },
     clickCount: {
-      type: Number, 
+      type: Number,
       default: 0,
     },
   },

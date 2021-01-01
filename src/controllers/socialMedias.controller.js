@@ -1,6 +1,4 @@
 const jwt = require("jsonwebtoken");
-const DigitalPlatform = require("../models/digitalPlatforms.model");
-const DigitalPlatformView = require("../models/digitalPlatformClicks.model");
 const User = require("../models/users.model");
 const SocialMedia = require("../models/socialMedia.model");
 const socialMediaClick = require("../models/socialMediaClick.model");

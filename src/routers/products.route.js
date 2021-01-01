@@ -2,7 +2,7 @@ const express = require("express");
 const auth = require("../middlewares/auth.middleware");
 const ProductController = require("../controllers/products.controller");
 const upload = require("../bucket-config/bucket");
-const AddValidProduct = require("../validations/product/addProduct.controller");
+const AddValidProduct = require("../validations/product/addProduct.validator");
 
 const router = express.Router();
 

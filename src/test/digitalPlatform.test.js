@@ -11,7 +11,7 @@ test("Should add a new digital platform", async () => {
     .post("/platforms/add")
     .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
     .send({
-      name: "Test Platform",
+      mediaPlatformSample: "5feef92adff41b3054326eaf",
       link: "www.test.com",
     })
     .expect(201);

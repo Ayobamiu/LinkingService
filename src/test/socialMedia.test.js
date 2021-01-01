@@ -1,13 +1,7 @@
 const app = require("../app");
 const request = require("supertest");
-const DigitalPlatform = require("../models/digitalPlatforms.model");
 
-const {
-  userOne,
-  setUpDatabase,
-  platformOneID,
-  socialOneID,
-} = require("./fixtures/db");
+const { userOne, setUpDatabase, socialOneID } = require("./fixtures/db");
 const SocialMedia = require("../models/socialMedia.model");
 
 beforeAll(setUpDatabase);
