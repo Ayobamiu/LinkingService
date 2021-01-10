@@ -7,6 +7,7 @@ const digitalPlatformRoute = require("./routers/digitalPlatform.route");
 const socialMediaPlatformRoute = require("./routers/socialMedia.route");
 const promotionPlatformRoute = require("./routers/promotion.route");
 const customLinkRoute = require("./routers/customLink.route");
+const Order = require("./models/order.model");
 require("./db/mongoose");
 //create express App
 

@@ -6,6 +6,7 @@ const SocialMedia = require("../../models/socialMedia.model");
 const Product = require("../../models/product.model");
 const Promotion = require("../../models/promotion.model");
 const CustomLink = require("../../models/customLink.model");
+const Order = require("../../models/order.model");
 
 const userOneID = new mongoose.Types.ObjectId();
 const userOne = {
@@ -64,6 +65,13 @@ const productOne = {
   price: 60,
 };
 
+const orderOneID = new mongoose.Types.ObjectId();
+const orderOne = {
+  _id: orderOneID,
+  buyer: userOneID,
+  product: productOneID,
+};
+
 const socialOneID = new mongoose.Types.ObjectId();
 const socialOne = {
   _id: socialOneID,
@@ -99,6 +107,7 @@ const setUpDatabase = async () => {
   await new Product(productOne).save();
   await new Promotion(promotionOne).save();
   await new CustomLink(customLinkOne).save();
+  await new Order(orderOne).save();
 };
 
 module.exports = {
@@ -116,4 +125,5 @@ module.exports = {
   promotionTwoID,
   customLinkOne,
   customLinkTwoID,
+  orderOne,
 };

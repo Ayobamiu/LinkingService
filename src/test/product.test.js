@@ -6,6 +6,7 @@ const {
   setUpDatabase,
   productOne,
   userOneID,
+  orderOne,
 } = require("./fixtures/db");
 const Product = require("../models/product.model");
 const Order = require("../models/order.model");
@@ -69,33 +70,43 @@ test("Should not add a new order if user is not authenticated", async () => {
     .expect(401);
 }, 30000);
 
-// test("Should not add a new digital platform if user is not authenticated", async () => {
-//   const response = await request(app)
-//     .post("/platforms/add")
-//     .send({
-//       name: "Test Platform",
-//       link: "www.test.com",
-//     })
-//     .expect(401);
-// });
+test("Should update a product if a user is authenticated", async () => {
+  const response = await request(app)
+    .patch("/products/" + productOne._id + "/update")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .send({ title: "Updated Product Title" })
+    .expect(200);
 
-// test("Should update a digital platform", async () => {
-//   const response = await request(app)
-//     .patch("/platforms/" + platformOneID + "/update")
-//     .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
-//     .send({ link: "www.newtest.com" })
-//     .expect(200);
+  //Assert that a product has been updated
+  const product = await Product.findById(response.body._id);
+  expect(product.title).toBe("Updated Product Title");
+});
 
-//   //Assert that a new user has been created
-//   const platform = await DigitalPlatform.findById(response.body._id);
-//   expect(platform.link).toBe("www.newtest.com");
-// });
+test("Should NOT update a product if a user is not authenticated", async () => {
+  await request(app)
+    .patch("/products/" + productOne._id + "/update")
+    .send({ title: "Updated Product Title" })
+    .expect(401);
+});
 
-// test("Should not update a digital platform if user is not authenticated", async () => {
-//   const response = await request(app)
-//     .patch("/platforms/" + platformOneID + "/update")
-//     .expect(401);
-// });
+test("Should update an order if a user is authenticated", async () => {
+  const response = await request(app)
+    .patch("/products/" + orderOne._id + "/update-order")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .send({ quantity: 10 })
+    .expect(200);
+
+  //Assert that an order has been updated
+  const order = await Order.findById(response.body._id);
+  expect(order.quantity).toBe(10);
+});
+
+test("Should NOT update a product if a user is not authenticated", async () => {
+  await request(app)
+    .patch("/products/" + orderOne._id + "/update-order")
+    .send({ quantity: 10 })
+    .expect(401);
+});
 
 test("Should delete a product", async () => {
   const response = await request(app)

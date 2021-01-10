@@ -22,6 +22,14 @@ const ProductSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    numberInStock: {
+      type: Number,
+      default: 1,
+    },
+    isAssured: {
+      type: Boolean,
+      default: false,
+    },
     cta: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CTA",
