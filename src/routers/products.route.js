@@ -18,11 +18,8 @@ router.post(
 router.delete("/:productId/remove", auth, ProductController.deleteProduct);
 router.post("/:productId/order", auth, ProductController.orderProduct);
 
-// router.patch(
-//   "/:platformId/update",
-//   auth,
-//   DigitalPlatformController.updateDigitalPlatform
-// );
+router.patch("/:orderId/update-order", auth, ProductController.updateOrder);
+router.patch("/:productId/update", auth, ProductController.updateProduct);
 router.get("/:productId", ProductController.viewProduct);
 
 module.exports = router;
