@@ -21,7 +21,7 @@ const PromotionSchema = mongoose.Schema(
     image: {
       type: String,
     },
-    video: {
+    video: { 
       type: String,
     },
     title: {

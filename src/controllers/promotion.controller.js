@@ -4,6 +4,7 @@ const Promotion = require("../models/promotion.model");
 const PromotionView = require("../models/promotionView.model");
 const User = require("../models/users.model");
 const mongoose = require("mongoose");
+const CustomLink = require("../models/customLink.model");
 
 /**
  *Contains Promotion Controller
@@ -45,6 +46,12 @@ class PromotionController {
       if (req.files.video) {
         promotionData.video = req.files.video[0].location;
       }
+      const customLinkData = {
+        title: req.body.title,
+        owner: req.user._id,
+        link: `/promotions/${promotionId}`,
+      };
+      await CustomLink.create(customLinkData);
       const promotion = await Promotion.create({
         ...promotionData,
         _id: promotionId,
