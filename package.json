@@ -4,6 +4,7 @@
   "description": "Linking Service Backend APIs",
   "main": "index.js",
   "scripts": {
+    "start": "node src/index.js",
     "dev": "env-cmd ./config/dev.env nodemon src/index.js",
     "test": "env-cmd ./config/test.env jest --watch --runInBand"
   },
@@ -43,5 +44,8 @@
     "jest": "^26.6.3",
     "nodemon": "^2.0.6",
     "supertest": "^6.0.1"
+  },
+  "engines": {
+    "node": "15.0.1"
   }
 }

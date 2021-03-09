@@ -12,7 +12,7 @@ test("Should sign up a new user", async () => {
       firstName: "Test User",
       email: "test@user.com",
       password: "testing101",
-      stageName: "New Singer",
+      userName: "New Singer",
     })
     .expect(201);
 

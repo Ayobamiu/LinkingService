@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const uniqueSlug = require("unique-slug");
 
 const PromotionSchema = mongoose.Schema(
   {
@@ -21,7 +22,7 @@ const PromotionSchema = mongoose.Schema(
     image: {
       type: String,
     },
-    video: { 
+    video: {
       type: String,
     },
     title: {
@@ -35,9 +36,22 @@ const PromotionSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    link: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
+
+PromotionSchema.pre("save", async function (next) {
+  const promotion = this;
+  if (promotion.isModified("title")) {
+    promotion.link = promotion.title.replace(/\s/g, "");
+  }
+
+  next();
+});
+
 const Promotion = mongoose.model("Promotion", PromotionSchema);
 
 module.exports = Promotion;

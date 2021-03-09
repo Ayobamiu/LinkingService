@@ -20,9 +20,10 @@ const userSchema = mongoose.Schema(
     lastName: {
       type: String,
     },
-    stageName: {
+    userName: {
       type: String,
       required: true,
+      trim: true,
     },
     slug: {
       type: String,
@@ -108,17 +109,23 @@ userSchema.methods.generateAuthToken = async function () {
   return token;
 };
 
-userSchema.statics.findByCredentials = async (email, password) => {
+userSchema.statics.findByCredentials = async (req, res, email, password) => {
   //check if user exists
   const user = await User.findOne({ email });
   if (!user) {
-    throw new Error("Unable to login");
+    return res.status(404).send({
+      error: "404 not found",
+      message: "Email is not registered",
+    });
   }
 
   //compare if the password matches the password for the user
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw new Error("Unable to login");
+    return res.status(205).send({
+      error: "205 Credentials not a match",
+      message: "Credential is not a match",
+    });
   }
 
   return user;
@@ -128,14 +135,14 @@ userSchema.pre("save", async function (next) {
   const user = this;
   // user.slug =
   //   "@" +
-  //   slugify(user.stageName, {
+  //   slugify(user.userName, {
   //     replacement: "_", // replace spaces with replacement character, defaults to `-`
   //     remove: undefined, // remove characters that match regex, defaults to `undefined`
   //     lower: true, // convert to lower case, defaults to `false`
   //     strict: true, // strip special characters except replacement, defaults to `false`
   //     locale: "en", // language code of the locale to use
   //   });
-  user.slug = "@" + uniqueSlug(user.stageName);
+  user.slug = "@" + uniqueSlug(user.userName);
   if (user.isModified("password")) {
     user.password = await bcrypt.hash(user.password, 8);
   }

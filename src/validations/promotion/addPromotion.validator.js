@@ -1,4 +1,5 @@
 const { check, validationResult } = require("express-validator");
+const Promotion = require("../../models/promotion.model");
 
 /**
  *Contains AddPromotionValidator Validator
@@ -32,6 +33,28 @@ class AddPromotionValidator {
         .isString()
         .withMessage("Title should be a String"),
     ];
+  }
+
+  /**
+   * check title availabilty.
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @param {Response} next - The next parameter.
+   * @memberof AddPromotionValidator
+   * @returns {JSON} - A JSON success response.
+   */
+  static async checkPromotionTitleAvailability(req, res, next) {
+    const promotion = await Promotion.findOne({
+      title: req.body.title,
+      user: req.user._id,
+    });
+    if (promotion) {
+      return res.status(205).json({
+        status: "205 resend request",
+        error: "Title is already in use, try another keyword",
+      });
+    }
+    return next();
   }
 
   /**

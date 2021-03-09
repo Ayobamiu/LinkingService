@@ -1,10 +1,13 @@
 const jwt = require("jsonwebtoken");
+const uniqueSlug = require("unique-slug");
+const mongoose = require("mongoose");
+
 const DigitalPlatform = require("../models/digitalPlatforms.model");
 const Promotion = require("../models/promotion.model");
 const PromotionView = require("../models/promotionView.model");
 const User = require("../models/users.model");
-const mongoose = require("mongoose");
 const CustomLink = require("../models/customLink.model");
+const Follow = require("../models/follows.model");
 
 /**
  *Contains Promotion Controller
@@ -39,6 +42,7 @@ class PromotionController {
         ...req.body,
         digitalPlatforms,
         user: req.user._id,
+      
       };
       if (req.files.image) {
         promotionData.image = req.files.image[0].location;
@@ -56,34 +60,24 @@ class PromotionController {
         ...promotionData,
         _id: promotionId,
       });
+      const followersList = [];
+      const followers = await Follow.find({ artist: req.user._id })
+        .select("follower")
+        .populate("follower");
+      followers.forEach((follower) => {
+        followersList.push({
+          name: follower.follower.fisrtName
+            ? follower.follower.fisrtName
+            : "User",
+          email: follower.follower.email,
+        });
+      });
+      console.log(followersList);
       return res.status(201).send(promotion);
     } catch (error) {
       return res.status(400).send();
     }
   }
-
-  //   /**
-  //    * Delete a DigitalPlatform
-  //    * @param {Request} req - Response object.
-  //    * @param {Response} res - The payload.
-  //    * @memberof DigitalPlatformController
-  //    * @returns {JSON} - A JSON success response.
-  //    *
-  //    */
-  //   static async deleteDigitalPlatform(req, res) {
-  //     try {
-  //       const digitalPlatform = await DigitalPlatform.findOneAndDelete({
-  //         _id: req.params.platformId,
-  //         artist: req.user._id,
-  //       });
-  //       if (!digitalPlatform) {
-  //         return res.status(404).send();
-  //       }
-  //       return res.status(200).send(digitalPlatform);
-  //     } catch (error) {
-  //       return res.status(500).send();
-  //     }
-  //   }
 
   /**
    * View a Promotion
@@ -122,39 +116,5 @@ class PromotionController {
       return res.status(500).send();
     }
   }
-
-  //   /**
-  //    * Update a DigitalPlatform
-  //    * @param {Request} req - Response object.
-  //    * @param {Response} res - The payload.
-  //    * @memberof DigitalPlatformController
-  //    * @returns {JSON} - A JSON success response.
-  //    *
-  //    */
-  //   static async updateDigitalPlatform(req, res) {
-  //     const updates = Object.keys(req.body);
-  //     const allowedUpdates = ["name", "link"];
-  //     const isValidOperation = updates.every((update) =>
-  //       allowedUpdates.includes(update)
-  //     );
-  //     if (!isValidOperation) {
-  //       return res.status(400).send({ error: "Invalid Updates" });
-  //     }
-  //     const digitalPlatform = await DigitalPlatform.findOne({
-  //       _id: req.params.platformId,
-  //       artist: req.user._id,
-  //     });
-  //     if (!digitalPlatform) {
-  //       return res.status(404).send({ error: "Not found" });
-  //     }
-  //     try {
-  //       updates.forEach((update) => (digitalPlatform[update] = req.body[update]));
-  //       await digitalPlatform.save();
-
-  //       return res.status(200).send(digitalPlatform);
-  //     } catch (error) {
-  //       return res.status(400).send(error);
-  //     }
-  //   }
 }
 module.exports = PromotionController;

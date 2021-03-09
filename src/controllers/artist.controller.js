@@ -26,7 +26,7 @@ class ArtistController {
     try {
       const artist = await User.findOneAndUpdate(
         {
-          slug: req.params.slug,
+          userName: req.params.userName,
         },
         { $inc: { viewCount: 1 } }
       ).populate({
@@ -34,7 +34,13 @@ class ArtistController {
         select: "_id name link -artist",
         model: DigitalPlatform,
       });
-      const artistView = await ArtistView.create({ artist: artist._id });
+      if (!artist) {
+        return res.status(404).send({
+          status: "404 not found",
+          error: "Username is not registered",
+        });
+      }
+      await ArtistView.create({ artist: artist._id });
       return res.status(201).send(artist);
     } catch (error) {
       return res.status(400).send();
@@ -52,7 +58,7 @@ class ArtistController {
     try {
       const user = await User.findOneAndUpdate(
         {
-          slug: req.params.slug,
+          userName: req.params.userName,
         },
         { $inc: { viewCount: 1 } }
       ).populate({

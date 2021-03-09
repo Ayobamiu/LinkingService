@@ -14,6 +14,7 @@ router.post(
     { name: "video", maxCount: 1 },
   ]),
   AddPromotionValidator.validateData(),
+  AddPromotionValidator.checkPromotionTitleAvailability,
   AddPromotionValidator.myValidationResult,
   PromotionController.addPromotion
 );

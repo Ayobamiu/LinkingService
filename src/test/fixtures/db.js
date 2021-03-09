@@ -13,7 +13,7 @@ const userOne = {
   _id: userOneID,
   email: "user@one.com",
   password: "userOne!!",
-  stageName: "user One",
+  userName: "user One",
   slug: "@userOne",
   tokens: [
     {
@@ -27,7 +27,7 @@ const userToFollow = {
   _id: userToFollowID,
   email: "usertofollow@one.com",
   password: "userToFollow!!",
-  stageName: "user One",
+  userName: "user One",
   slug: "@userToFollow",
   tokens: [
     {
@@ -40,7 +40,7 @@ const userTwo = {
   _id: userTwoID,
   email: "user@two.com",
   password: "usertwo!!",
-  stageName: "user Two",
+  userName: "user Two",
   tokens: [
     {
       token: jwt.sign({ _id: userTwoID }, process.env.JWT_SECRET),
