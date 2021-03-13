@@ -13,6 +13,28 @@ const {
 
 const router = express.Router();
 
+router.post("/check-username", async (req, res) => {
+  try {
+    const userNameExists = await User.findOne({ userName: req.body.userName });
+    if (userNameExists) {
+      return res.status(400).send({
+        status: "400 Bad request",
+        error: "Username taken.",
+      });
+    }
+    if (!userNameExists) {
+      return res.status(200).send({
+        status: "200 succesfull",
+        error: "Username available!",
+      });
+    }
+  } catch (error) {
+    res.status(500).send({
+      status: "500 Internal server error",
+      error: "Error saving User",
+    });
+  }
+});
 router.post("/sign-up", async (req, res) => {
   try {
     const userNameExists = await User.findOne({ userName: req.body.userName });
