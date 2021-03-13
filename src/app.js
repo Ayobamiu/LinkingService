@@ -1,5 +1,6 @@
 //import
 const express = require("express");
+const cors = require("cors");
 const userRoute = require("./routers/users.route");
 const productRoute = require("./routers/products.route");
 const artistRoute = require("./routers/artist.route");
@@ -12,6 +13,8 @@ require("./db/mongoose");
 //create express App
 
 const app = express();
+
+app.use(cors());
 app.use(express.urlencoded());
 app.use(express.json());
 
