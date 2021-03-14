@@ -35,7 +35,7 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
     bio: {
@@ -48,6 +48,9 @@ const userSchema = mongoose.Schema(
       type: String,
     },
     profilePhoto: {
+      type: String,
+    },
+    googleId: {
       type: String,
     },
     viewCount: {

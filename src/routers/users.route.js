@@ -1,9 +1,35 @@
+var passport = require("passport");
+var GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 const express = require("express");
 const jwt = require("jsonwebtoken");
 
 const auth = require("../middlewares/auth.middleware");
 const User = require("../models/users.model");
 const upload = require("../bucket-config/bucket");
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID:
+        "327841086527-5obdqenuk320vlq20gt86qfepb3do3ac.apps.googleusercontent.com",
+      clientSecret: "39btqVrYaWKzYuia2pnazm_W",
+      callbackURL: "https://monaly-app.herokuapp.com",
+    },
+    function (accessToken, refreshToken, profile, done) {
+      User.create(
+        {
+          googleId: profile.id,
+          userName: profile.username,
+          email: profile.emails || "new@user.com",
+        },
+        function (err, user) {
+          return done(err, user);
+        }
+      );
+      console.log("profile", profile);
+    }
+  )
+);
 
 const {
   sendWelcomeEmail,
@@ -12,6 +38,21 @@ const {
 } = require("../emails/account");
 
 const router = express.Router();
+
+router.get(
+  "/google",
+  passport.authenticate("google", {
+    scope: ["https://www.googleapis.com/auth/plus.login"],
+  })
+);
+router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  function (req, res) {
+    console.log(req);
+    res.redirect("/");
+  }
+);
 
 router.post("/check-username", async (req, res) => {
   try {
@@ -236,7 +277,7 @@ router.post("/start-reset-password", async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).send({ error: "Email not registered." });
+      return res.status(404).send({ error: "Email not registered." });
     }
     const token = jwt.sign(
       { _id: user._id.toString(), email },
@@ -244,7 +285,7 @@ router.post("/start-reset-password", async (req, res) => {
       { expiresIn: "1h" }
     );
     resetPasswordMessage(email, token);
-    res.send({ message: "email sent" });
+    res.send({ message: "Reset password link sent" });
   } catch (error) {
     res.status(500).send();
   }
@@ -267,7 +308,7 @@ router.patch("/reset-password/:token", async (req, res) => {
     }
     user.password = password_one;
     await user.save();
-    res.send(user);
+    res.send({ message: "Password changed successfully", user });
   } catch (error) {
     res.status(500).send(error);
   }
