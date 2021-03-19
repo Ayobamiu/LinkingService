@@ -11,7 +11,11 @@ const CustomLinkSchema = mongoose.Schema(
       required: true,
     },
     link: {
-      type: String, 
+      type: String,
+    },
+    visible: {
+      type: Boolean,
+      default: true,
     },
     clickCount: {
       type: Number,

@@ -84,6 +84,12 @@ const userSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.virtual("customLinks", {
+  ref: "CustomLink",
+  localField: "_id",
+  foreignField: "owner",
+});
+
 userSchema.virtual("platforms", {
   ref: "DigitalPlatform",
   localField: "_id",

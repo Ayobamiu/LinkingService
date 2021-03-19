@@ -32,28 +32,58 @@ class CustomLinkController {
     }
   }
 
-  //   /**
-  //    * Delete a DigitalPlatform
-  //    * @param {Request} req - Response object.
-  //    * @param {Response} res - The payload.
-  //    * @memberof CustomLinkController
-  //    * @returns {JSON} - A JSON success response.
-  //    *
-  //    */
-  //   static async deleteDigitalPlatform(req, res) {
-  //     try {
-  //       const digitalPlatform = await DigitalPlatform.findOneAndDelete({
-  //         _id: req.params.platformId,
-  //         artist: req.user._id,
-  //       });
-  //       if (!digitalPlatform) {
-  //         return res.status(404).send();
-  //       }
-  //       return res.status(200).send(digitalPlatform);
-  //     } catch (error) {
-  //       return res.status(500).send();
-  //     }
-  //   }
+  /**
+   * Update a CustomLink
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof CustomLinkController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async updateCustomLink(req, res) {
+    let update = {};
+    if (req.body.link) {
+      update.link = req.body.link;
+    }
+    if (req.body.title) {
+      update.title = req.body.title;
+    }
+    if (req.body.visible) {
+      update.visible = req.body.visible;
+    }
+    try {
+      const customLink = await CustomLink.findByIdAndUpdate(
+        req.params.customLinkId,
+        update,
+        { new: true }
+      );
+      return res.status(200).send({ customLink });
+    } catch (error) {
+      return res.status(400).send();
+    }
+  }
+
+  /**
+   * Delete a CustomLink
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof CustomLinkController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async deleteCustomLink(req, res) {
+    try {
+      const customLink = await CustomLink.findByIdAndDelete(
+        req.params.customLinkId
+      );
+      if (!customLink) {
+        return res.status(404).send({ error: "Link not found" });
+      }
+      return res.status(200).send(customLink);
+    } catch (error) {
+      return res.status(400).send();
+    }
+  }
 
   /**
    * View a CustomLink
@@ -92,6 +122,27 @@ class CustomLinkController {
       return res.status(200).send(customLink);
     } catch (error) {
       return res.status(500).send();
+    }
+  }
+
+  /**
+   * Get user a CustomLinks
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof CustomLinkController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async getMyCustomLinks(req, res) {
+    try {
+      const customLinks = await CustomLink.find({ owner: req.user._id }).sort({
+        createdAt: -1,
+      });
+      return res.status(200).send({ customLinks });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Could not get links. Check connection!",
+      });
     }
   }
 
