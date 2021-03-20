@@ -5,13 +5,7 @@ const AddCustomLink = require("../validations/customLink/customLink.validator");
 
 const router = express.Router();
 
-router.post(
-  "/add",
-  auth,
-  AddCustomLink.validateData(),
-  AddCustomLink.myValidationResult,
-  CustomLinkController.addCustomLink
-);
+router.post("/add", auth, CustomLinkController.addCustomLink);
 router.get("/:customLinkId", CustomLinkController.viewCustomLink);
 router.patch("/:customLinkId", auth, CustomLinkController.updateCustomLink);
 router.delete("/:customLinkId", auth, CustomLinkController.deleteCustomLink);

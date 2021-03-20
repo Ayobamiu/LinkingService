@@ -15,22 +15,8 @@ class AddCustomLink {
    */
   static validateData() {
     return [
-      check("title")
-        .exists()
-        .withMessage("Title is required")
-        .not()
-        .isEmpty()
-        .withMessage("Title cannot be empty")
-        .isString()
-        .withMessage("Title should be a String"),
-      check("link")
-        .exists()
-        .withMessage("Link is required")
-        .not()
-        .isEmpty()
-        .withMessage("Link cannot be empty")
-        .isURL()
-        .withMessage("Link should be a URL"),
+      check("title").isString().withMessage("Title should be a String"),
+      check("link").isURL().withMessage("Link should be a URL"),
     ];
   }
 
