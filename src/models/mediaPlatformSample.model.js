@@ -8,7 +8,7 @@ const MediaPlatformSampleSchema = mongoose.Schema(
     icon: {
       type: String,
     },
-  },
+  }, 
   { timestamps: true }
 );
 const MediaPlatformSample = mongoose.model(

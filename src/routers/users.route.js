@@ -142,9 +142,14 @@ router.post(
     { name: "profilePhoto", maxCount: 1 },
     { name: "coverPhoto", maxCount: 1 },
   ]),
+
   async (req, res) => {
-    req.user.profilePhoto = req.files.profilePhoto[0].location;
-    req.user.coverPhoto = req.files.coverPhoto[0].location;
+    if (req.files.profilePhoto) {
+      req.user.profilePhoto = req.files.profilePhoto[0].location;
+    }
+    if (req.files.coverPhoto) {
+      req.user.coverPhoto = req.files.coverPhoto[0].location;
+    }
     try {
       await req.user.save();
       res.send(req.user);
@@ -246,13 +251,12 @@ router.delete("/me", auth, async (req, res) => {
 router.patch("/me", auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = [
-    "email",
     "password",
     "age",
     "category",
     "firstName",
     "lastName",
-    "stageName",
+    "userName",
     "bio",
     "location",
   ];

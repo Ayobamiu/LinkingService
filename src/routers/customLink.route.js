@@ -14,3 +14,4 @@ router.get("/", auth, CustomLinkController.getMyCustomLinks);
 // router.post("/:artistId/follow", auth, ArtistController.followArtist);
 
 module.exports = router;
+ 

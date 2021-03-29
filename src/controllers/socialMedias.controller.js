@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/users.model");
 const SocialMedia = require("../models/socialMedia.model");
 const socialMediaClick = require("../models/socialMediaClick.model");
+const MediaPlatformSample = require("../models/mediaPlatformSample.model");
 
 /**
  *Contains SocialMediaPlatform Controller
@@ -21,12 +22,78 @@ class SocialMediaPlatformController {
    */
   static async addSocialMediaPlatform(req, res) {
     try {
+      const existingSocialMediaPlatform = await SocialMedia.findOneAndUpdate(
+        {
+          user: req.user._id,
+          mediaPlatformSample: req.body.mediaPlatformSample,
+        },
+        { link: req.body.link }
+      );
+      if (existingSocialMediaPlatform) {
+        return res.status(201).send(null);
+      }
       const socialMediaPlatform = await SocialMedia.create({
         user: req.user._id,
         mediaPlatformSample: req.body.mediaPlatformSample,
         link: req.body.link,
       });
       return res.status(201).send(socialMediaPlatform);
+    } catch (error) {
+      return res.status(400).send();
+    }
+  }
+
+  /**
+   * Add a MediaPlatformSample
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof SocialMediaPlatformController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async addMediaPlatformSample(req, res) {
+    try {
+      const mediaPlatform = await MediaPlatformSample.create({
+        name: req.body.name,
+        icon: req.body.icon,
+      });
+      return res.status(201).send(mediaPlatform);
+    } catch (error) {
+      return res.status(400).send();
+    }
+  }
+
+  /**
+   * Get MediaPlatformSamples
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof SocialMediaPlatformController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async getUserSocials(req, res) {
+    try {
+      const socials = await SocialMedia.find({
+        user: req.user._id,
+      }).populate("mediaPlatformSample");
+      return res.status(200).send(socials);
+    } catch (error) {
+      return res.status(400).send();
+    }
+  }
+
+  /**
+   * Get MediaPlatformSamples
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof SocialMediaPlatformController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async getMediaPlatformSamples(req, res) {
+    try {
+      const mediaPlatforms = await MediaPlatformSample.find({});
+      return res.status(200).send(mediaPlatforms);
     } catch (error) {
       return res.status(400).send();
     }

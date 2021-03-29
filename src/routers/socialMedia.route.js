@@ -14,6 +14,22 @@ router.post(
   SocialMediaPlatformController.addSocialMediaPlatform
 );
 
+router.post(
+  "/add-media-platform-sample",
+  SocialMediaPlatformController.addMediaPlatformSample
+);
+
+router.get(
+  "/get-user-socials",
+  auth,
+  SocialMediaPlatformController.getUserSocials
+);
+
+router.get(
+  "/get-media-platform-samples",
+  SocialMediaPlatformController.getMediaPlatformSamples
+);
+
 router.delete(
   "/:socialId/remove",
   auth,

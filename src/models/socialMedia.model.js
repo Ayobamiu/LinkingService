@@ -12,7 +12,7 @@ const SocialMediaSchema = mongoose.Schema(
     },
     link: {
       type: String,
-    },
+    }, 
     clickCount: {
       type: Number,
       default: 0,

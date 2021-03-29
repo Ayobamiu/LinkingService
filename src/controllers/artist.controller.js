@@ -46,6 +46,7 @@ class ArtistController {
       return res.status(400).send();
     }
   }
+  
   /**
    * View Artist Prodcut Page
    * @param {Request} req - Response object.
