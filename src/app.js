@@ -22,7 +22,7 @@ app.use("/products", productRoute);
 app.use("/auth", userRoute);
 app.use("/platforms", digitalPlatformRoute);
 app.use("/socials", socialMediaPlatformRoute);
-app.use("/artists", artistRoute);
+app.use("/users", artistRoute);
 app.use("/promotions", promotionPlatformRoute);
 app.use("/custom-links", customLinkRoute);
 

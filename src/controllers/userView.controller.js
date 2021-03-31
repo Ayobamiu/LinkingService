@@ -1,9 +1,10 @@
 const jwt = require("jsonwebtoken");
-const ArtistView = require("../models/artistViews.model");
+const UserView = require("../models/artistViews.model");
 const DigitalPlatform = require("../models/digitalPlatforms.model");
 const Follow = require("../models/follows.model");
 const Like = require("../models/likes.model");
 const Product = require("../models/product.model");
+const SocialMedia = require("../models/socialMedia.model");
 const User = require("../models/users.model");
 
 /**
@@ -11,47 +12,59 @@ const User = require("../models/users.model");
  *
  *
  *
- * @class ArtistController
+ * @class UserViewController
  */
-class ArtistController {
+class UserViewController {
   /**
-   * View Artist Page
+   * View User's Page
    * @param {Request} req - Response object.
    * @param {Response} res - The payload.
-   * @memberof ArtistController
+   * @memberof UserViewController
    * @returns {JSON} - A JSON success response.
    *
    */
-  static async viewArtist(req, res) {
+  static async viewUser(req, res) {
     try {
-      const artist = await User.findOneAndUpdate(
+      const user = await User.findOneAndUpdate(
         {
           userName: req.params.userName,
         },
-        { $inc: { viewCount: 1 } }
-      ).populate({
-        path: "platforms",
-        select: "_id name link -artist",
-        model: DigitalPlatform,
-      });
-      if (!artist) {
+        { $inc: { viewCount: 1 } },
+        { new: true }
+      )
+        .populate({
+          path: "platforms",
+          select: "_id name link -artist",
+          model: DigitalPlatform,
+        })
+        .populate({
+          path: "socialMediaplatforms",
+          model: SocialMedia,
+          populate: "mediaPlatformSample",
+        })
+        .populate({
+          path: "customLinks",
+          options: { sort: { createdAt: -1 } },
+          select: "_id visible link title -owner",
+        });
+      if (!user) {
         return res.status(404).send({
           status: "404 not found",
           error: "Username is not registered",
         });
       }
-      await ArtistView.create({ artist: artist._id });
-      return res.status(201).send(artist);
+      await UserView.create({ artist: user._id });
+      return res.status(201).send(user);
     } catch (error) {
       return res.status(400).send();
     }
   }
-  
+
   /**
    * View Artist Prodcut Page
    * @param {Request} req - Response object.
    * @param {Response} res - The payload.
-   * @memberof ArtistController
+   * @memberof UserViewController
    * @returns {JSON} - A JSON success response.
    *
    */
@@ -77,7 +90,7 @@ class ArtistController {
    * Follow Artist
    * @param {Request} req - Response object.
    * @param {Response} res - The payload.
-   * @memberof ArtistController
+   * @memberof UserViewController
    * @returns {JSON} - A JSON success response.
    *
    */
@@ -111,7 +124,7 @@ class ArtistController {
    * Like Artist
    * @param {Request} req - Response object.
    * @param {Response} res - The payload.
-   * @memberof ArtistController
+   * @memberof UserViewController
    * @returns {JSON} - A JSON success response.
    *
    */
@@ -143,4 +156,4 @@ class ArtistController {
     }
   }
 }
-module.exports = ArtistController;
+module.exports = UserViewController;

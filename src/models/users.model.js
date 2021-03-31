@@ -48,7 +48,7 @@ const userSchema = mongoose.Schema(
       type: String,
     },
     profilePhoto: {
-      type: String, 
+      type: String,
     },
     googleId: {
       type: String,
@@ -94,6 +94,11 @@ userSchema.virtual("platforms", {
   ref: "DigitalPlatform",
   localField: "_id",
   foreignField: "artist",
+});
+userSchema.virtual("socialMediaplatforms", {
+  ref: "SocialMedia",
+  localField: "_id",
+  foreignField: "user",
 });
 
 userSchema.virtual("products", {
