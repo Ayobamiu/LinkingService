@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const ArtistViewSchema = mongoose.Schema(
+const UserViewSchema = mongoose.Schema(
   {
-    artist: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -15,9 +15,15 @@ const ArtistViewSchema = mongoose.Schema(
       type: String,
       default: "Earth",
     },
+    city: {
+      type: String,
+    },
+    country: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
-const ArtistView = mongoose.model("ArtistView", ArtistViewSchema);
+const UserView = mongoose.model("UserView", UserViewSchema);
 
-module.exports = ArtistView;
+module.exports = UserView;

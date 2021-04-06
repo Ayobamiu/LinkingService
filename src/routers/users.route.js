@@ -45,6 +45,7 @@ router.get(
     scope: ["https://www.googleapis.com/auth/plus.login"],
   })
 );
+
 router.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
@@ -57,6 +58,7 @@ router.get(
 router.post("/check-username", async (req, res) => {
   try {
     const userNameExists = await User.findOne({ userName: req.body.userName });
+
     if (userNameExists) {
       return res.status(400).send({
         status: "400 Bad request",
@@ -76,6 +78,7 @@ router.post("/check-username", async (req, res) => {
     });
   }
 });
+
 router.post("/sign-up", async (req, res) => {
   try {
     const userNameExists = await User.findOne({ userName: req.body.userName });
@@ -100,7 +103,7 @@ router.post("/sign-up", async (req, res) => {
     });
     const token = await user.generateAuthToken();
     await user.save();
-    sendWelcomeEmail(user.email, user.firstName);
+    sendWelcomeEmail(user.email, user.firstName, user.userName, false);
     res.status(201).send({ status: "success", user, token });
   } catch (error) {
     res.status(500).send({
@@ -259,6 +262,7 @@ router.patch("/me", auth, async (req, res) => {
     "userName",
     "bio",
     "location",
+    "profileTitle",
   ];
   const isValidOperation = updates.every((update) =>
     allowedUpdates.includes(update)

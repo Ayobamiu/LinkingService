@@ -53,8 +53,38 @@ class UserViewController {
           error: "Username is not registered",
         });
       }
-      await UserView.create({ artist: user._id });
       return res.status(201).send(user);
+    } catch (error) {
+      return res.status(400).send();
+    }
+  }
+
+  /**
+   * store visitors location
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof UserViewController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async getVisitorsLocation(req, res) {
+    try {
+      const user = await User.findOne({
+        userName: req.params.userName,
+      });
+
+      let viewData = { user: user._id };
+      if (req.body.visitorLocation) {
+        viewData.visitorLocation = req.body.visitorLocation;
+      }
+      if (req.body.city) {
+        viewData.city = req.body.city;
+      }
+      if (req.body.country) {
+        viewData.country = req.body.country;
+      }
+      const viewResult = await UserView.create(viewData);
+      return res.status(201).send(viewResult);
     } catch (error) {
       return res.status(400).send();
     }

@@ -1,0 +1,261 @@
+var Mailgen = require("mailgen");
+
+// Configure mailgen by setting a theme and your product info
+var mailGenerator = new Mailgen({
+  theme: "default",
+  product: {
+    // Appears in header & footer of e-mails
+    name: "Monaly Inc",
+    link: "https://monaly-app.herokuapp.com/",
+    // Optional product logo
+    logo: "https://apply-to-usman.s3.eu-west-2.amazonaws.com/monaly_logo.svg",
+    logoHeight: "30px",
+  },
+});
+const monalySignUpEmailBody = (userName, name, isAProUser) => {
+  const data = {
+    goToAction: {
+      text: "Go to Dashboard",
+      link: "https://monaly-app.herokuapp.com/dashboard",
+      description: "Get started in your dashboard",
+    },
+    greeting: "Hi",
+    signature: false,
+    name: name,
+    intro: [
+      "Welcome to Monaly! - We’re thrilled to have you here.",
+      "Be rest assured you’ve made the right choice by signing up. Monaly helps you keep all your links in one place, easily accessible by your audience. Less stress, no hassle.",
+      "As a reminder, your Monaly link is https://monaly-app.herokuapp.com/" +
+        userName,
+    ],
+    action: [
+      {
+        instructions:
+          "Your first step is to add link(s) to your Monaly Page in very easy steps; click on “Add link”, copy the URL, title it. Boom, your first link is set!",
+        button: {
+          color: "#ef476f", // Optional action button color
+          text: "Add a link",
+          link: "https://monaly-app.herokuapp.com/dashboard",
+        },
+      },
+      {
+        instructions:
+          "The only way to drive traffic is to get your Monaly link out there – everywhere possible. Where your audience is, your Monaly link should be! Copy your Monaly link and share wherever your audience is!",
+        button: {
+          color: "#ef476f", // Optional action button color
+          text: "Copy Link",
+          link: "https://monaly-app.herokuapp.com/dashboard",
+        },
+      },
+    ],
+    outro:
+      "Need help, or have questions? Just reply to this email, we'd love to help.",
+  };
+  if (!isAProUser) {
+    data.action.unshift({
+      instructions:
+        "Check out our PRO plan for access to multiple Monaly accounts, complete analytics, and subscribers information to better understand your audience for just $5 per month.",
+      button: {
+        color: "#ef476f", // Optional action button color
+        text: "Join the Pros",
+        link: "https://monaly-app.herokuapp.com/pricing",
+      },
+    });
+  }
+  return data;
+};
+const monaly24HoursViewsAndClickReportEmailBody = (
+  name,
+  viewsCount,
+  clicksCount,
+  isAProUser,
+  userName
+) => {
+  const data = {
+    goToAction: {
+      text: "Go to Dashboard",
+      link: "https://monaly-app.herokuapp.com/dashboard",
+      description: "Get started in your dashboard",
+    },
+    signature: false,
+    title: "Hi " + name + "!	Your account is getting attention",
+    intro: [
+      `You had ${viewsCount} views and ${clicksCount} visitors visited your links in the last 24 hours.`,
+    ],
+    action: [],
+    outro: [
+      `To get traffic to your monaly page, share your monaly link https://mona.ly/${userName} with your audience anywhere they are.`,
+      "Need help, or have questions? Just reply to this email, we'd love to help.",
+    ],
+  };
+  if (!isAProUser) {
+    data.action.unshift({
+      instructions:
+        "Try Monaly Pro to get full analytics, customize your monaly page and many more.",
+      button: {
+        color: "#ef476f", // Optional action button color
+        text: "Join the Pros",
+        link: "https://monaly-app.herokuapp.com/pricing",
+      },
+    });
+  }
+  return data;
+};
+const linkCreatedReportEmailBody = (
+  name,
+  title,
+  link,
+  isAProUser,
+  userName
+) => {
+  const data = {
+    goToAction: {
+      text: "Go to Dashboard",
+      link: "https://monaly-app.herokuapp.com/dashboard",
+      description: "Get started in your dashboard",
+    },
+    greeting: "Hi",
+    name: name,
+    signature: false,
+    intro: [
+      " Your monaly link you just created has the following details.",
+      "	Title : " + title,
+      "	Link : " + link,
+    ],
+    action: [
+      {
+        instructions: "	You can edit the title and link from your dashboard.",
+        button: {
+          color: "#ef476f", // Optional action button color
+          text: "Edit your link",
+          link: "https://monaly-app.herokuapp.com/dashboard",
+        },
+      },
+      {
+        instructions:
+          "You can do more with your link, Add image or video to better convey your message,  on your dashboard ",
+        button: {
+          color: "#ef476f", // Optional action button color
+          text: "Your Monaly dashboard.",
+          link: "https://monaly-app.herokuapp.com/dashboard",
+        },
+      },
+      {
+        instructions:
+          "Try out our pro version to get full analytics, customize your monaly page and many more.",
+        button: {
+          color: "#ef476f", // Optional action button color
+          text: "Join the Pros",
+          link: "https://monaly-app.herokuapp.com/pricing",
+        },
+      },
+    ],
+    outro: `To get traffic to your monaly page, share your monaly link https://mona.ly/${userName} with your audience anywhere they are.`,
+  };
+  if (!isAProUser) {
+    data.action.push({
+      instructions:
+        "Check out our PRO plan for access to multiple Monaly accounts, complete analytics, and subscribers information to better understand your audience for just $5 per month.",
+      button: {
+        color: "#ef476f", // Optional action button color
+        text: "Join the Pros",
+        link: "https://monaly-app.herokuapp.com/pricing",
+      },
+    });
+  }
+  return data;
+};
+const linkViewedReportEmailBody = (title, location, isAProUser, userName) => {
+  const data = {
+    goToAction: {
+      text: "Go to Dashboard",
+      link: "https://monaly-app.herokuapp.com/dashboard",
+      description: "Get started in your dashboard",
+    },
+    title: "“" + title + "” was viewed by a visitor from " + location + ".",
+
+    signature: false,
+    intro: ["Your links are getting attention."],
+    action: [
+      {
+        instructions:
+          "You can do more with your link, Add image or video to better convey your message,  on your dashboard ",
+        button: {
+          color: "#ef476f", // Optional action button color
+          text: "Your Monaly dashboard.",
+          link: "https://monaly-app.herokuapp.com/dashboard",
+        },
+      },
+    ],
+    outro:
+      "To get traffic to your monaly page, share your monaly link https://mona.ly/esther with your audience anywhere they are.",
+  };
+  if (!isAProUser) {
+    data.action.unshift({
+      instructions: `To get traffic to your monaly page, share your monaly link https://mona.ly/${userName} with your audience anywhere they are.`,
+      button: {
+        color: "#ef476f", // Optional action button color
+        text: "Join the Pros",
+        link: "https://monaly-app.herokuapp.com/dashboard",
+      },
+    });
+  }
+  return data;
+};
+const moreMonalyCreditsReportEmailBody = (
+  friend,
+  newCredits,
+  totalCredits,
+  userName
+) => {
+  const data = {
+    goToAction: {
+      text: "Go to Dashboard",
+      link: "https://monaly-app.herokuapp.com/dashboard",
+      description: "Get started in your dashboard",
+    },
+    title: "Your friend " + friend + " just signed up",
+
+    signature: false,
+    intro: [
+      `Your friend ${friend} just signed up on Monaly and earned you ${newCredits} monaly credits. You now have a total of ${totalCredits} monaly credits.`,
+    ],
+    action: [
+      {
+        instructions:
+          "	 Invite more friends to get to Monaly Pro for free faster.",
+        button: {
+          color: "#ef476f", // Optional action button color
+          text: "Invite more friends",
+          link: "https://monaly-app.herokuapp.com/invite",
+        },
+      },
+    ],
+    outro: `To get traffic to your monaly page, share your monaly link https://mona.ly/${userName} with your audience anywhere they are.`,
+  };
+  return data;
+};
+
+const generateSignUpEmail = (userName, name, isAProUser) => {
+  var signUpEmail = {
+    body: monalySignUpEmailBody(userName, name, isAProUser),
+  };
+  const signUpEmailBody = mailGenerator.generate(signUpEmail);
+  return signUpEmailBody;
+};
+
+var newEmail = {
+  body: moreMonalyCreditsReportEmailBody("Usman", 20, 40),
+};
+// console.log(generateSignUpEmail("Usman"));
+// Generate an HTML email with the provided contents
+
+// Generate the plaintext version of the e-mail (for clients that do not support HTML)
+// var emailText = mailGenerator.generatePlaintext(signUpEmail);
+var emailHTML = mailGenerator.generate(newEmail);
+
+// Optionally, preview the generated HTML e-mail by writing it to a local file
+// require("fs").writeFileSync("preview.html", emailHTML, "utf8");
+
+module.exports = { generateSignUpEmail };
+// export { generateSignUpEmail };

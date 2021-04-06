@@ -1,18 +1,28 @@
 const sgMail = require("@sendgrid/mail");
+const { generateSignUpEmail } = require("./emails");
 
 sgMail.setApiKey(
-  "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"
+  "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"
 );
 
-const sendWelcomeEmail = (email, name) => {
-  sgMail.send({
-    to: email,
-    from: "usman.ayobami.g20@gmail.com",
-    subject: "Thanks for coming!!",
-    text: `Welcome to Monaly ${name}.`,
-  });
+const sendWelcomeEmail = (email, name, userName, isAProUser = false) => {
+  sgMail
+    .send({
+      to: email,
+      from: "monalyinc@gmail.com",
+      subject: "Thanks for coming!!",
+      text: `Welcome to Monaly ${name}.`,
+      html: generateSignUpEmail(userName, name, isAProUser),
+    })
+    .then((response) => {
+      console.log("Email sent");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 };
 
+// sendWelcomeEmail("ayobamiu@gmail.com", "Usman");
 const sendCancellationEmail = (email, name) => {
   sgMail.send({
     to: email,

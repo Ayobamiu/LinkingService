@@ -25,6 +25,9 @@ const userSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    profileTitle: {
+      type: String,
+    },
     slug: {
       type: String,
     },
@@ -43,7 +46,7 @@ const userSchema = mongoose.Schema(
     },
     location: {
       type: String,
-    },
+    }, 
     coverPhoto: {
       type: String,
     },
