@@ -1,4 +1,8 @@
 var Mailgen = require("mailgen");
+const linktoDashboard = `${process.env.ORIGIN_URL}/dashboard`;
+const linktoPricing = `${process.env.ORIGIN_URL}/pricing`;
+const linktoInvite = `${process.env.ORIGIN_URL}/invite`;
+const linkToMonaly = process.env.ORIGIN_URL;
 
 // Configure mailgen by setting a theme and your product info
 var mailGenerator = new Mailgen({
@@ -6,17 +10,18 @@ var mailGenerator = new Mailgen({
   product: {
     // Appears in header & footer of e-mails
     name: "Monaly Inc",
-    link: "https://monaly-app.herokuapp.com/",
+    link: linkToMonaly,
     // Optional product logo
     logo: "https://apply-to-usman.s3.eu-west-2.amazonaws.com/monaly_logo.svg",
     logoHeight: "30px",
   },
 });
+
 const monalySignUpEmailBody = (userName, name, isAProUser) => {
   const data = {
     goToAction: {
       text: "Go to Dashboard",
-      link: "https://monaly-app.herokuapp.com/dashboard",
+      link: linktoDashboard,
       description: "Get started in your dashboard",
     },
     greeting: "Hi",
@@ -25,8 +30,7 @@ const monalySignUpEmailBody = (userName, name, isAProUser) => {
     intro: [
       "Welcome to Monaly! - We’re thrilled to have you here.",
       "Be rest assured you’ve made the right choice by signing up. Monaly helps you keep all your links in one place, easily accessible by your audience. Less stress, no hassle.",
-      "As a reminder, your Monaly link is https://monaly-app.herokuapp.com/" +
-        userName,
+      "As a reminder, your Monaly link is " + linkToMonaly + "/" + userName,
     ],
     action: [
       {
@@ -35,7 +39,7 @@ const monalySignUpEmailBody = (userName, name, isAProUser) => {
         button: {
           color: "#ef476f", // Optional action button color
           text: "Add a link",
-          link: "https://monaly-app.herokuapp.com/dashboard",
+          link: linktoDashboard,
         },
       },
       {
@@ -44,7 +48,7 @@ const monalySignUpEmailBody = (userName, name, isAProUser) => {
         button: {
           color: "#ef476f", // Optional action button color
           text: "Copy Link",
-          link: "https://monaly-app.herokuapp.com/dashboard",
+          link: linktoDashboard,
         },
       },
     ],
@@ -58,12 +62,32 @@ const monalySignUpEmailBody = (userName, name, isAProUser) => {
       button: {
         color: "#ef476f", // Optional action button color
         text: "Join the Pros",
-        link: "https://monaly-app.herokuapp.com/pricing",
+        link: linktoPricing,
       },
     });
   }
   return data;
 };
+
+const monalyResetPasswordEmailBody = (name, link) => {
+  return {
+    name: name,
+    signature: false,
+    intro:
+      "You have received this email because a password reset request for your account was received.",
+    action: {
+      instructions: "Click the button below to reset your password:",
+      button: {
+        color: "#ef476f",
+        text: "Reset your password",
+        link: link,
+      },
+    },
+    outro:
+      "If you did not request a password reset, no further action is required on your part.",
+  };
+};
+
 const monaly24HoursViewsAndClickReportEmailBody = (
   name,
   viewsCount,
@@ -74,7 +98,7 @@ const monaly24HoursViewsAndClickReportEmailBody = (
   const data = {
     goToAction: {
       text: "Go to Dashboard",
-      link: "https://monaly-app.herokuapp.com/dashboard",
+      link: linktoDashboard,
       description: "Get started in your dashboard",
     },
     signature: false,
@@ -95,12 +119,13 @@ const monaly24HoursViewsAndClickReportEmailBody = (
       button: {
         color: "#ef476f", // Optional action button color
         text: "Join the Pros",
-        link: "https://monaly-app.herokuapp.com/pricing",
+        link: linktoPricing,
       },
     });
   }
   return data;
 };
+
 const linkCreatedReportEmailBody = (
   name,
   title,
@@ -111,7 +136,7 @@ const linkCreatedReportEmailBody = (
   const data = {
     goToAction: {
       text: "Go to Dashboard",
-      link: "https://monaly-app.herokuapp.com/dashboard",
+      link: linktoDashboard,
       description: "Get started in your dashboard",
     },
     greeting: "Hi",
@@ -128,7 +153,7 @@ const linkCreatedReportEmailBody = (
         button: {
           color: "#ef476f", // Optional action button color
           text: "Edit your link",
-          link: "https://monaly-app.herokuapp.com/dashboard",
+          link: linktoDashboard,
         },
       },
       {
@@ -137,7 +162,7 @@ const linkCreatedReportEmailBody = (
         button: {
           color: "#ef476f", // Optional action button color
           text: "Your Monaly dashboard.",
-          link: "https://monaly-app.herokuapp.com/dashboard",
+          link: linktoDashboard,
         },
       },
       {
@@ -146,7 +171,7 @@ const linkCreatedReportEmailBody = (
         button: {
           color: "#ef476f", // Optional action button color
           text: "Join the Pros",
-          link: "https://monaly-app.herokuapp.com/pricing",
+          link: linktoPricing,
         },
       },
     ],
@@ -159,17 +184,18 @@ const linkCreatedReportEmailBody = (
       button: {
         color: "#ef476f", // Optional action button color
         text: "Join the Pros",
-        link: "https://monaly-app.herokuapp.com/pricing",
+        link: linktoPricing,
       },
     });
   }
   return data;
 };
+
 const linkViewedReportEmailBody = (title, location, isAProUser, userName) => {
   const data = {
     goToAction: {
       text: "Go to Dashboard",
-      link: "https://monaly-app.herokuapp.com/dashboard",
+      link: linktoDashboard,
       description: "Get started in your dashboard",
     },
     title: "“" + title + "” was viewed by a visitor from " + location + ".",
@@ -183,12 +209,14 @@ const linkViewedReportEmailBody = (title, location, isAProUser, userName) => {
         button: {
           color: "#ef476f", // Optional action button color
           text: "Your Monaly dashboard.",
-          link: "https://monaly-app.herokuapp.com/dashboard",
+          link: linktoDashboard,
         },
       },
     ],
     outro:
-      "To get traffic to your monaly page, share your monaly link https://mona.ly/esther with your audience anywhere they are.",
+      "To get traffic to your monaly page, share your monaly link https://mona.ly/" +
+      userName +
+      " with your audience anywhere they are.",
   };
   if (!isAProUser) {
     data.action.unshift({
@@ -196,12 +224,13 @@ const linkViewedReportEmailBody = (title, location, isAProUser, userName) => {
       button: {
         color: "#ef476f", // Optional action button color
         text: "Join the Pros",
-        link: "https://monaly-app.herokuapp.com/dashboard",
+        link: linktoDashboard,
       },
     });
   }
   return data;
 };
+
 const moreMonalyCreditsReportEmailBody = (
   friend,
   newCredits,
@@ -211,7 +240,7 @@ const moreMonalyCreditsReportEmailBody = (
   const data = {
     goToAction: {
       text: "Go to Dashboard",
-      link: "https://monaly-app.herokuapp.com/dashboard",
+      link: linktoDashboard,
       description: "Get started in your dashboard",
     },
     title: "Your friend " + friend + " just signed up",
@@ -227,7 +256,7 @@ const moreMonalyCreditsReportEmailBody = (
         button: {
           color: "#ef476f", // Optional action button color
           text: "Invite more friends",
-          link: "https://monaly-app.herokuapp.com/invite",
+          link: linktoInvite,
         },
       },
     ],
@@ -245,14 +274,14 @@ const generateSignUpEmail = (userName, name, isAProUser) => {
 };
 
 var newEmail = {
-  body: moreMonalyCreditsReportEmailBody("Usman", 20, 40),
+  body: monalyResetPasswordEmailBody("Usman", "https://www.reset.link"),
 };
 // console.log(generateSignUpEmail("Usman"));
 // Generate an HTML email with the provided contents
 
 // Generate the plaintext version of the e-mail (for clients that do not support HTML)
 // var emailText = mailGenerator.generatePlaintext(signUpEmail);
-var emailHTML = mailGenerator.generate(newEmail);
+// var emailHTML = mailGenerator.generate(newEmail);
 
 // Optionally, preview the generated HTML e-mail by writing it to a local file
 // require("fs").writeFileSync("preview.html", emailHTML, "utf8");
