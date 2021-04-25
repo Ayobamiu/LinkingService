@@ -36,6 +36,7 @@ const {
   sendCancellationEmail,
   resetPasswordMessage,
 } = require("../emails/account");
+const Themes = require("../models/themes.model");
 
 const router = express.Router();
 
@@ -238,7 +239,10 @@ router.post("/users/logoutAll", auth, async (req, res) => {
 });
 
 router.get("/me", auth, async (req, res) => {
-  res.send(req.user);
+  const user = await User.findOne({ _id: req.user._id }).populate({
+    path: "theme",
+  });
+  res.send(user);
 });
 
 router.delete("/me", auth, async (req, res) => {
@@ -263,6 +267,8 @@ router.patch("/me", auth, async (req, res) => {
     "bio",
     "location",
     "profileTitle",
+    "stackStyle",
+    "theme",
   ];
   const isValidOperation = updates.every((update) =>
     allowedUpdates.includes(update)
@@ -273,8 +279,11 @@ router.patch("/me", auth, async (req, res) => {
   try {
     updates.forEach((update) => (req.user[update] = req.body[update]));
     await req.user.save();
+    const user = await User.findOne({ _id: req.user._id }).populate({
+      path: "theme",
+    });
 
-    res.send(req.user);
+    res.send(user);
   } catch (error) {
     res.status(400).send(error);
   }

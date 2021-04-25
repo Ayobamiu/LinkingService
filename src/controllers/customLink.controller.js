@@ -48,6 +48,9 @@ class CustomLinkController {
     if (req.body.title) {
       update.title = req.body.title;
     }
+    if (req.file) {
+      update.image = req.file.location;
+    }
     if (req.body.visible) {
       update.visible = req.body.visible;
     }

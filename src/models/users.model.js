@@ -46,7 +46,11 @@ const userSchema = mongoose.Schema(
     },
     location: {
       type: String,
-    }, 
+    },
+    stackStyle: {
+      type: String,
+      default: "stacked",
+    },
     coverPhoto: {
       type: String,
     },
@@ -55,6 +59,10 @@ const userSchema = mongoose.Schema(
     },
     googleId: {
       type: String,
+    },
+    theme: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Themes",
     },
     viewCount: {
       type: Number,

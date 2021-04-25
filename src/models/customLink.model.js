@@ -10,6 +10,9 @@ const CustomLinkSchema = mongoose.Schema(
       ref: "User",
       required: true,
     },
+    image: {
+      type: String,
+    },
     link: {
       type: String,
     },

@@ -5,6 +5,7 @@ const Follow = require("../models/follows.model");
 const Like = require("../models/likes.model");
 const Product = require("../models/product.model");
 const SocialMedia = require("../models/socialMedia.model");
+const Themes = require("../models/themes.model");
 const User = require("../models/users.model");
 
 /**
@@ -46,7 +47,8 @@ class UserViewController {
           path: "customLinks",
           options: { sort: { createdAt: -1 } },
           select: "_id visible link title -owner",
-        });
+        })
+        .populate({ path: "theme", model: Themes });
       if (!user) {
         return res.status(404).send({
           status: "404 not found",
