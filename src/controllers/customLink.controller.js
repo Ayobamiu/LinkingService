@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const UserView = require("../models/artistViews.model");
 const CustomLink = require("../models/customLink.model");
 const CustomLinkClick = require("../models/customLinkClick.model");
 const User = require("../models/users.model");
@@ -116,12 +117,12 @@ class CustomLinkController {
       if (!customLink) {
         return res.status(404).send();
       }
-      await User.findByIdAndUpdate(
+      const user = await User.findByIdAndUpdate(
         customLink.owner,
         { $inc: { clickCount: 1 } },
         { new: true }
       );
-      await CustomLinkClick.create({ ...customLinkViewData });
+      await CustomLinkClick.create({ ...customLinkViewData, user: user._id });
       return res.status(200).send(customLink);
     } catch (error) {
       return res.status(500).send();
@@ -145,6 +146,27 @@ class CustomLinkController {
     } catch (error) {
       return res.status(500).json({
         message: "Could not get links. Check connection!",
+      });
+    }
+  }
+
+  /**
+   * Get CustomLinks count
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof CustomLinkController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async getCustomLinksCount(req, res) {
+    try {
+      const customLinksCount = await CustomLink.countDocuments({});
+      const noOfClicks = await CustomLinkClick.countDocuments({});
+      const noOfVisits = await UserView.countDocuments({});
+      return res.status(200).send({ customLinksCount, noOfClicks, noOfVisits });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Could not count links. Check connection!",
       });
     }
   }

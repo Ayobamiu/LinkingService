@@ -103,7 +103,7 @@ router.post("/sign-up", async (req, res) => {
       userName: req.body.userName.replace(/\s/g, ""),
     });
     const token = await user.generateAuthToken();
-    await user.save();
+    await user.save(); 
     sendWelcomeEmail(user.email, user.firstName, user.userName, false);
     res.status(201).send({ status: "success", user, token });
   } catch (error) {

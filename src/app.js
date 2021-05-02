@@ -11,6 +11,7 @@ const customLinkRoute = require("./routers/customLink.route");
 const themeRoute = require("./routers/theme.route");
 const Order = require("./models/order.model");
 require("./db/mongoose");
+require("./schedules/email");
 //create express App
 
 const app = express();
@@ -27,8 +28,5 @@ app.use("/socials", socialMediaPlatformRoute);
 app.use("/users", artistRoute);
 app.use("/promotions", promotionPlatformRoute);
 app.use("/custom-links", customLinkRoute);
-
-//tell express to pass incoming request body and send to us in json format
-// app.use(express.json());
 
 module.exports = app;

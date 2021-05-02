@@ -27,16 +27,18 @@ class SocialMediaPlatformController {
           user: req.user._id,
           mediaPlatformSample: req.body.mediaPlatformSample,
         },
-        { link: req.body.link }
-      );
+        { link: req.body.link },
+        { new: true }
+      ).populate("mediaPlatformSample");
       if (existingSocialMediaPlatform) {
-        return res.status(201).send(null);
+        return res.status(200).send(existingSocialMediaPlatform);
       }
       const socialMediaPlatform = await SocialMedia.create({
         user: req.user._id,
         mediaPlatformSample: req.body.mediaPlatformSample,
         link: req.body.link,
       });
+      socialMediaPlatform.populate("mediaPlatformSample");
       return res.status(201).send(socialMediaPlatform);
     } catch (error) {
       return res.status(400).send();

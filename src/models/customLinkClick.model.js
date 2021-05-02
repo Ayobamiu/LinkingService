@@ -7,6 +7,10 @@ const CustomLinkClickSchema = mongoose.Schema(
       ref: "CustomLink",
       required: true,
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     visitor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
