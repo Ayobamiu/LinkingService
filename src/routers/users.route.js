@@ -37,6 +37,7 @@ const {
   resetPasswordMessage,
 } = require("../emails/account");
 const Themes = require("../models/themes.model");
+const UserView = require("../models/artistViews.model");
 
 const router = express.Router();
 
@@ -103,7 +104,7 @@ router.post("/sign-up", async (req, res) => {
       userName: req.body.userName.replace(/\s/g, ""),
     });
     const token = await user.generateAuthToken();
-    await user.save(); 
+    await user.save();
     sendWelcomeEmail(user.email, user.firstName, user.userName, false);
     res.status(201).send({ status: "success", user, token });
   } catch (error) {
@@ -243,6 +244,13 @@ router.get("/me", auth, async (req, res) => {
     path: "theme",
   });
   res.send(user);
+});
+router.get("/me/views", auth, async (req, res) => {
+  const visitors = await UserView.find({ user: req.user._id }).populate({
+    path: "visitor",
+    select: "firstName lastName email",
+  });
+  res.send(visitors);
 });
 
 router.delete("/me", auth, async (req, res) => {

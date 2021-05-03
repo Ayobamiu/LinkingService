@@ -38,7 +38,7 @@ class SocialMediaPlatformController {
         mediaPlatformSample: req.body.mediaPlatformSample,
         link: req.body.link,
       });
-      socialMediaPlatform.populate("mediaPlatformSample");
+      await socialMediaPlatform.populate("mediaPlatformSample");
       return res.status(201).send(socialMediaPlatform);
     } catch (error) {
       return res.status(400).send();

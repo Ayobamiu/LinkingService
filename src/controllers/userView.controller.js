@@ -46,7 +46,7 @@ class UserViewController {
         .populate({
           path: "customLinks",
           options: { sort: { createdAt: -1 } },
-          select: "_id visible link title -owner",
+          select: "_id visible link title image -owner",
         })
         .populate({ path: "theme", model: Themes });
       if (!user) {

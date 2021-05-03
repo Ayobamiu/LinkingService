@@ -1,8 +1,8 @@
 var Mailgen = require("mailgen");
-const linktoDashboard = `${process.env.ORIGIN_URL}/dashboard`;
-const linktoPricing = `${process.env.ORIGIN_URL}/pricing`;
-const linktoInvite = `${process.env.ORIGIN_URL}/invite`;
 const linkToMonaly = process.env.ORIGIN_URL;
+const linktoDashboard = `${linkToMonaly}/dashboard`;
+const linktoPricing = `${linkToMonaly}/pricing`;
+const linktoInvite = `${linkToMonaly}/invite`;
 
 // Configure mailgen by setting a theme and your product info
 var mailGenerator = new Mailgen({
@@ -108,7 +108,7 @@ const monaly24HoursViewsAndClickReportEmailBody = (
     ],
     action: [],
     outro: [
-      `To get traffic to your monaly page, share your monaly link https://mona.ly/${userName} with your audience anywhere they are.`,
+      `To get traffic to your monaly page, share your monaly link ${linkToMonaly}/${userName} with your audience anywhere they are.`,
       "Need help, or have questions? Just reply to this email, we'd love to help.",
     ],
   };
@@ -175,7 +175,7 @@ const linkCreatedReportEmailBody = (
         },
       },
     ],
-    outro: `To get traffic to your monaly page, share your monaly link https://mona.ly/${userName} with your audience anywhere they are.`,
+    outro: `To get traffic to your monaly page, share your monaly link ${linkToMonaly}/${userName} with your audience anywhere they are.`,
   };
   if (!isAProUser) {
     data.action.push({
@@ -214,13 +214,15 @@ const linkViewedReportEmailBody = (title, location, isAProUser, userName) => {
       },
     ],
     outro:
-      "To get traffic to your monaly page, share your monaly link https://mona.ly/" +
+      "To get traffic to your monaly page, share your monaly link " +
+      linkToMonaly +
+      "/" +
       userName +
       " with your audience anywhere they are.",
   };
   if (!isAProUser) {
     data.action.unshift({
-      instructions: `To get traffic to your monaly page, share your monaly link https://mona.ly/${userName} with your audience anywhere they are.`,
+      instructions: `To get traffic to your monaly page, share your monaly link ${linkToMonaly}/${userName} with your audience anywhere they are.`,
       button: {
         color: "#ef476f", // Optional action button color
         text: "Join the Pros",
@@ -260,7 +262,7 @@ const moreMonalyCreditsReportEmailBody = (
         },
       },
     ],
-    outro: `To get traffic to your monaly page, share your monaly link https://mona.ly/${userName} with your audience anywhere they are.`,
+    outro: `To get traffic to your monaly page, share your monaly link ${linkToMonaly}/${userName} with your audience anywhere they are.`,
   };
   return data;
 };
@@ -272,11 +274,30 @@ const generateSignUpEmail = (userName, name, isAProUser) => {
   const signUpEmailBody = mailGenerator.generate(signUpEmail);
   return signUpEmailBody;
 };
+const generateRecurringEmail = (
+  name,
+  viewsCount,
+  clicksCount,
+  isAProUser,
+  userName
+) => {
+  var email = {
+    body: monaly24HoursViewsAndClickReportEmailBody(
+      name,
+      viewsCount,
+      clicksCount,
+      isAProUser,
+      userName
+    ),
+  };
+  const generated = mailGenerator.generate(email);
+  return generated;
+};
 
 var newEmail = {
-  body: monalyResetPasswordEmailBody("Usman", "https://www.reset.link"),
+  body: monaly24HoursViewsAndClickReportEmailBody("Usman", 2, 3, true, "@dd"),
 };
-// console.log(generateSignUpEmail("Usman"));
+
 // Generate an HTML email with the provided contents
 
 // Generate the plaintext version of the e-mail (for clients that do not support HTML)
@@ -286,5 +307,8 @@ var newEmail = {
 // Optionally, preview the generated HTML e-mail by writing it to a local file
 // require("fs").writeFileSync("preview.html", emailHTML, "utf8");
 
-module.exports = { generateSignUpEmail };
+module.exports = {
+  generateSignUpEmail,
+  generateRecurringEmail,
+};
 // export { generateSignUpEmail };

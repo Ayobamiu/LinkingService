@@ -3,6 +3,7 @@ const UserView = require("../models/artistViews.model");
 const CustomLinkClick = require("../models/customLinkClick.model");
 const User = require("../models/users.model");
 const moment = require("moment");
+const { sendRecurringDailyEmail } = require("../emails/account");
 
 const messageAllUser = async () => {
   const users = await User.find({});
@@ -18,7 +19,15 @@ const messageAllUser = async () => {
       user: user._id,
       createdAt: { $gte: yesterday, $lte: today },
     });
-    console.log(user.userName, clickCount, viewCount);
+    sendRecurringDailyEmail(
+      user.email,
+      user.firstName,
+      user.userName,
+      false,
+      viewCount,
+      clickCount
+    );
+    // console.log(user.userName, clickCount, viewCount);
   }
 };
 
@@ -28,14 +37,14 @@ const messageAllUser = async () => {
 // messageAllUser();
 const rule = new schedule.RecurrenceRule();
 rule.dayOfWeek = [0, new schedule.Range(4, 6)];
-rule.hour = 17;
+rule.hour = 19;
 rule.minute = 0;
 
-const job = schedule.scheduleJob("* * * * * *", function () {
+const job = schedule.scheduleJob(rule, function () {
   messageAllUser();
 });
 
 job.emit();
-job.cancel();
+// job.cancel();
 
 module.exports = job;

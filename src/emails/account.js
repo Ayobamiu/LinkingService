@@ -1,8 +1,37 @@
 const sgMail = require("@sendgrid/mail");
-const { generateSignUpEmail } = require("./emails");
+const { generateSignUpEmail, generateRecurringEmail } = require("./emails");
 
 sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 
+const sendRecurringDailyEmail = (
+  email,
+  name,
+  userName,
+  isAProUser = false,
+  viewsCount,
+  clicksCount
+) => {
+  sgMail
+    .send({
+      to: email,
+      from: "monalyinc@gmail.com",
+      subject: "Your Account is getting Attention",
+      text: `${name}, Your Account is getting Attention.`,
+      html: generateRecurringEmail(
+        name,
+        viewsCount,
+        clicksCount,
+        isAProUser,
+        userName
+      ),
+    })
+    .then((response) => {
+      console.log("Email sent");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
 const sendWelcomeEmail = (email, name, userName, isAProUser = false) => {
   sgMail
     .send({
@@ -55,4 +84,5 @@ module.exports = {
   sendWelcomeEmail,
   sendCancellationEmail,
   resetPasswordMessage,
+  sendRecurringDailyEmail,
 };
