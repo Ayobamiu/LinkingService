@@ -36,8 +36,8 @@ const messageAllUser = async () => {
 
 // messageAllUser();
 const rule = new schedule.RecurrenceRule();
-rule.dayOfWeek = [0, new schedule.Range(4, 6)];
-rule.hour = 19;
+rule.dayOfWeek = [0, new schedule.Range(0, 6)];
+rule.hour = 21;
 rule.minute = 0;
 
 const job = schedule.scheduleJob(rule, function () {
