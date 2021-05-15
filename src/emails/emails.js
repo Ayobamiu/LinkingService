@@ -104,7 +104,11 @@ const monaly24HoursViewsAndClickReportEmailBody = (
     signature: false,
     title: "Hi " + name + "!	Your account is getting attention",
     intro: [
-      `You had ${viewsCount} views and ${clicksCount} visitors visited your links in the last 24 hours.`,
+      `You had ${viewsCount} view${
+        viewsCount > 0 ? "s" : ""
+      } and ${clicksCount} visitor${
+        clicksCount > 0 ? "s" : ""
+      } visited your links in the last 24 hours.`,
     ],
     action: [],
     outro: [
