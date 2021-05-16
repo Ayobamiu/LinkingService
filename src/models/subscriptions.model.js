@@ -13,6 +13,9 @@ const SubscriptionSchema = mongoose.Schema(
     endDate: {
       type: Date,
     },
+    subscription_id: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
