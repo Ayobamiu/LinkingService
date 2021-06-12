@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const auth = require("../middlewares/auth.middleware");
 const User = require("../models/users.model");
 const upload = require("../bucket-config/bucket");
+const worldLowRes = require("../config/world.json");
 
 passport.use(
   new GoogleStrategy(
@@ -245,12 +246,23 @@ router.get("/me", auth, async (req, res) => {
   });
   res.send(user);
 });
+
 router.get("/me/views", auth, async (req, res) => {
   const visitors = await UserView.find({ user: req.user._id }).populate({
     path: "visitor",
     select: "firstName lastName email",
   });
-  res.send(visitors);
+  const countries = [];
+  worldLowRes.layers.forEach((country) => {
+    let item = { ...country };
+    const countryMatches = visitors.filter(
+      (visitor) => visitor.country.toLowerCase() === country.name.toLowerCase()
+    );
+
+    country.count = countryMatches.length;
+    return country;
+  });
+  res.send({ visitors, countries: worldLowRes });
 });
 
 router.delete("/me", auth, async (req, res) => {
