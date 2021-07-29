@@ -390,7 +390,7 @@ router.post("/add-address", auth, async (req, res) => {
       longitude,
     } = req.body;
 
-    const address = await ShippingAddress.create({
+    const newAddress = await ShippingAddress.create({
       name,
       address,
       email,
@@ -404,7 +404,7 @@ router.post("/add-address", auth, async (req, res) => {
       user: req.user._id,
     });
 
-    res.send(address);
+    res.send({ address: newAddress });
   } catch (error) {
     res.status(500).send(error);
   }
