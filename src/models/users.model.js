@@ -31,6 +31,12 @@ const userSchema = mongoose.Schema(
     slug: {
       type: String,
     },
+    storeName: {
+      type: String,
+    },
+    storeAddress: {
+      type: String,
+    },
     email: {
       type: String,
       required: true,
@@ -57,6 +63,9 @@ const userSchema = mongoose.Schema(
     profilePhoto: {
       type: String,
     },
+    storeLogo: {
+      type: String,
+    },
     googleId: {
       type: String,
     },
@@ -77,6 +86,14 @@ const userSchema = mongoose.Schema(
       default: 0,
     },
     followerCount: {
+      type: Number,
+      default: 0,
+    },
+    availableBalance: {
+      type: Number,
+      default: 0,
+    },
+    ledgerBalance: {
       type: Number,
       default: 0,
     },
@@ -117,6 +134,11 @@ userSchema.virtual("products", {
   localField: "_id",
   foreignField: "user",
 });
+userSchema.virtual("addresses", {
+  ref: "ShippingAddress",
+  localField: "_id",
+  foreignField: "user",
+});
 
 userSchema.methods.toJSON = function () {
   const user = this;
@@ -139,7 +161,7 @@ userSchema.methods.generateAuthToken = async function () {
 
 userSchema.statics.findByCredentials = async (req, res, email, password) => {
   //check if user exists
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).populate("addresses");
   if (!user) {
     return res.status(404).send({
       error: "404 not found",

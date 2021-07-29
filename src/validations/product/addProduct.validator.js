@@ -31,14 +31,6 @@ class AddValidProduct {
         .withMessage("Description cannot be empty")
         .isString()
         .withMessage("Description should be a String"),
-      check("cta")
-        .exists()
-        .withMessage("CTA is required")
-        .not()
-        .isEmpty()
-        .withMessage("CTA cannot be empty")
-        .isMongoId()
-        .withMessage("CTA should be a mongoID"),
     ];
   }
 

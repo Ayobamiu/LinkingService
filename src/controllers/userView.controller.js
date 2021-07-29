@@ -107,12 +107,14 @@ class UserViewController {
           userName: req.params.userName,
         },
         { $inc: { viewCount: 1 } }
-      ).populate({
-        path: "products",
-        select: "_id images title description price cta -user",
-        model: Product,
-      });
-      return res.status(200).send(user.products);
+      )
+        .populate({
+          path: "products",
+          select: "_id images title description price cta user",
+          model: Product,
+        })
+        .select("products storeName firstName lastName");
+      return res.status(200).send(user);
     } catch (error) {
       return res.status(400).send();
     }

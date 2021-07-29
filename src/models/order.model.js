@@ -14,14 +14,35 @@ const OrderSchema = mongoose.Schema(
       ],
       default: "started",
     },
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-      required: true,
+    products: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          default: 1,
+        },
+      },
+    ],
+    deliveryMethod: {
+      type: String,
+      default: "pickUp",
+    },
+    deliveryMerchant: {
+      type: String,
+      default: "Monaly Express",
     },
     dileveryAddress: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ShippingAddress",
+    },
+    seller: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     buyer: {
       type: mongoose.Schema.Types.ObjectId,
@@ -34,10 +55,7 @@ const OrderSchema = mongoose.Schema(
     shippingFee: {
       type: Number,
     },
-    quantity: {
-      type: Number,
-      default: 1,
-    },
+
     eta: {
       type: Date,
       default: new Date(+new Date() + 7 * 24 * 60 * 60 * 1000),

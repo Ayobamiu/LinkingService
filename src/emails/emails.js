@@ -3,6 +3,7 @@ const linkToMonaly = process.env.ORIGIN_URL;
 const linktoDashboard = `${linkToMonaly}/dashboard`;
 const linktoPricing = `${linkToMonaly}/pricing`;
 const linktoInvite = `${linkToMonaly}/invite`;
+const linktoOrders = `${linkToMonaly}/orders`;
 
 // Configure mailgen by setting a theme and your product info
 var mailGenerator = new Mailgen({
@@ -66,6 +67,117 @@ const monalySignUpEmailBody = (userName, name, isAProUser) => {
       },
     });
   }
+  return data;
+};
+const data = [
+  {
+    item: "Event-driven I/O server-side JavaScript environment based on V8.",
+    quantity: 2,
+    price: "$10.99",
+  },
+  {
+    item:
+      "Programmatically create beautiful e-mails using plain old JavaScript.",
+    quantity: 3,
+    price: "$1.99",
+  },
+];
+
+const recieptForSeller = (receiptData, name) => {
+  const data = {
+    goToAction: {
+      text: "Go to Dashboard",
+      link: linktoDashboard,
+      description: "Check order status in Dashboard",
+    },
+    greeting: "Hi",
+    signature: false,
+    name: name,
+    intro: [
+      "An order for your products has been processed succesfully.",
+      "Kindly stay in reach of the delivery merchant for product retrieval.,",
+      " A good packaging leaves a lasting impression on customers, please pack the good very well.",
+      "Delivery merchants will be in contact soon.",
+    ],
+    table: {
+      data: receiptData,
+      columns: {
+        // Optionally, customize the column widths
+        customWidth: {
+          quantity: "20%",
+          price: "15%",
+        },
+        // Optionally, change column text alignment
+        customAlignment: {
+          price: "right",
+        },
+      },
+    },
+    action: [
+      {
+        instructions:
+          "You can check the status of your order and more in your dashboard",
+        button: {
+          color: "#ef476f", // Optional action button color
+          text: "Go to Dashboard",
+          link: linktoDashboard,
+        },
+      },
+      {
+        instructions:
+          "Click the 'Dispatched' Button on the Order details page after you handle the package to the delivery merchant",
+        button: {
+          color: "#ef476f", // Optional action button color
+          text: "Order Details",
+          link: linktoDashboard,
+        },
+      },
+    ],
+    outro:
+      "Need help, or have questions? Just reply to this email, we'd love to help.",
+  };
+  return data;
+};
+const reciept = (receiptData, name) => {
+  const data = {
+    goToAction: {
+      text: "Go to Dashboard",
+      link: linktoDashboard,
+      description: "Check order status in Dashboard",
+    },
+    greeting: "Hi",
+    signature: false,
+    name: name,
+    intro: ["Your order has been processed succesfully."],
+    table: {
+      data: receiptData,
+      columns: {
+        // Optionally, customize the column widths
+        customWidth: {
+          quantity: "20%",
+          price: "15%",
+        },
+        // Optionally, change column text alignment
+        customAlignment: {
+          price: "right",
+        },
+      },
+    },
+    action: [
+      {
+        instructions:
+          "You can check the status of your order and more in your dashboard",
+        button: {
+          color: "#ef476f", // Optional action button color
+          text: "Go to Dashboard",
+          link: linktoDashboard,
+        },
+      },
+    ],
+    outro:
+      "Need help, or have questions? Just reply to this email, we'd love to help.",
+  };
+
   return data;
 };
 
@@ -278,6 +390,20 @@ const generateSignUpEmail = (userName, name, isAProUser) => {
   const signUpEmailBody = mailGenerator.generate(signUpEmail);
   return signUpEmailBody;
 };
+const generateReciept = (data, name) => {
+  var receiptEmail = {
+    body: reciept(data, name),
+  };
+  const receiptEmailBody = mailGenerator.generate(receiptEmail);
+  return receiptEmailBody;
+};
+const generateRecieptForSeller = (data, name) => {
+  var receiptEmail = {
+    body: recieptForSeller(data, name),
+  };
+  const receiptEmailBody = mailGenerator.generate(receiptEmail);
+  return receiptEmailBody;
+};
 const generateRecurringEmail = (
   name,
   viewsCount,
@@ -299,20 +425,22 @@ const generateRecurringEmail = (
 };
 
 var newEmail = {
-  body: monaly24HoursViewsAndClickReportEmailBody("Usman", 2, 3, true, "@dd"),
+  body: recieptForSeller(data, "Usman Ayobami"),
 };
 
 // Generate an HTML email with the provided contents
 
 // Generate the plaintext version of the e-mail (for clients that do not support HTML)
 // var emailText = mailGenerator.generatePlaintext(signUpEmail);
-// var emailHTML = mailGenerator.generate(newEmail);
+var emailHTML = mailGenerator.generate(newEmail);
 
 // Optionally, preview the generated HTML e-mail by writing it to a local file
-// require("fs").writeFileSync("preview.html", emailHTML, "utf8");
+require("fs").writeFileSync("preview.html", emailHTML, "utf8");
 
 module.exports = {
   generateSignUpEmail,
   generateRecurringEmail,
+  generateReciept,
+  generateRecieptForSeller,
 };
 // export { generateSignUpEmail };

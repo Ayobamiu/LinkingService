@@ -2,13 +2,18 @@ const mongoose = require("mongoose");
 
 const ShippingAddressSchema = mongoose.Schema(
   {
-    firstName: {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    name: {
       type: String,
     },
-    lastName: {
+    email: {
       type: String,
     },
-    addressLine: {
+    address: {
       type: String,
     },
     city: {
@@ -17,10 +22,19 @@ const ShippingAddressSchema = mongoose.Schema(
     state: {
       type: String,
     },
+    country: {
+      type: String,
+    },
     zip: {
       type: String,
     },
     phoneNumber: {
+      type: String,
+    },
+    latitude: {
+      type: String,
+    },
+    longitude: {
       type: String,
     },
   },

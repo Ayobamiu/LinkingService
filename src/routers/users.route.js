@@ -39,6 +39,7 @@ const {
 } = require("../emails/account");
 const Themes = require("../models/themes.model");
 const UserView = require("../models/artistViews.model");
+const ShippingAddress = require("../models/shippingAddress.model");
 
 const router = express.Router();
 
@@ -105,6 +106,7 @@ router.post("/sign-up", async (req, res) => {
       userName: req.body.userName.replace(/\s/g, ""),
     });
     const token = await user.generateAuthToken();
+    await user.populate("addresses");
     await user.save();
     sendWelcomeEmail(user.email, user.firstName, user.userName, false);
     res.status(201).send({ status: "success", user, token });
@@ -242,7 +244,7 @@ router.post("/users/logoutAll", auth, async (req, res) => {
 
 router.get("/me", auth, async (req, res) => {
   const user = await User.findOne({ _id: req.user._id }).populate({
-    path: "theme",
+    path: "theme addresses",
   });
   res.send(user);
 });
@@ -309,6 +311,27 @@ router.patch("/me", auth, async (req, res) => {
   }
 });
 
+router.patch(
+  "/me/storelogo",
+  auth,
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+          storeLogo: req.file.location,
+        },
+        { new: true }
+      );
+
+      res.send({ storeLogo: user.storeLogo });
+    } catch (error) {
+      res.status(400).send(error);
+    }
+  }
+);
+
 router.post("/start-reset-password", async (req, res) => {
   const email = req.body.email;
   try {
@@ -346,6 +369,42 @@ router.patch("/reset-password/:token", async (req, res) => {
     user.password = password_one;
     await user.save();
     res.send({ message: "Password changed successfully", user });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.post("/add-address", auth, async (req, res) => {
+  try {
+    // const user = await User.findById(req.user._id)
+    const {
+      name,
+      address,
+      email,
+      city,
+      country,
+      state,
+      zip,
+      phoneNumber,
+      latitude,
+      longitude,
+    } = req.body;
+
+    const address = await ShippingAddress.create({
+      name,
+      address,
+      email,
+      city,
+      country,
+      state,
+      zip,
+      phoneNumber,
+      latitude,
+      longitude,
+      user: req.user._id,
+    });
+
+    res.send(address);
   } catch (error) {
     res.status(500).send(error);
   }

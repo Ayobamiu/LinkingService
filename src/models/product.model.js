@@ -15,6 +15,9 @@ const ProductSchema = mongoose.Schema(
     description: {
       type: String,
     },
+    video: {
+      type: String,
+    },
     price: {
       type: Number,
     },
@@ -30,10 +33,13 @@ const ProductSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    returnable: {
+      type: Boolean,
+      default: false,
+    },
     cta: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "CTA",
-      required: true,
+      type: String,
+      default: "buy",
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,

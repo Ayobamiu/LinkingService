@@ -32,16 +32,16 @@ const storage = multerS3({
 
 const upload = multer({
   storage: storage,
-  fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png|JPG)$/)) {
-      return cb(new Error("Kindly upload an image"));
-    }
-    cb(undefined, true);
+  // fileFilter(req, file, cb) {
+  //   if (!file.originalname.match(/\.(jpg|jpeg|png|JPG)$/)) {
+  //     return cb(new Error("Kindly upload an image"));
+  //   }
+  //   cb(undefined, true);
 
-    // cb(new Error("File Upload failed!!"));
-    // cb(undefined, true); //no error & upload should be accepted
-    // cb(undefined, false); //no error & upload should be silently rejected
-  },
+  //   // cb(new Error("File Upload failed!!"));
+  //   // cb(undefined, true); //no error & upload should be accepted
+  //   // cb(undefined, false); //no error & upload should be silently rejected
+  // },
 });
 
 module.exports = upload;

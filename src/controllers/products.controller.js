@@ -1,6 +1,10 @@
 const Order = require("../models/order.model");
 const Product = require("../models/product.model");
 const moment = require("moment");
+const Cart = require("../models/cart.model");
+const User = require("../models/users.model");
+const { sendRecieptBuyer, sendRecieptSeller } = require("../emails/account");
+const ShippingAddress = require("../models/shippingAddress.model");
 
 /**
  *Contains Product Controller
@@ -20,21 +24,23 @@ class ProductController {
    */
   static async addProduct(req, res) {
     let images = [];
-    for (let index = 0; index < req.files.length; index++) {
-      const element = req.files[index];
-      images.push({ image: element.location });
+    if (req.files.images) {
+      for (let index = 0; index < req.files.images.length; index++) {
+        const element = req.files.images[index];
+        images.push({ image: element.location });
+      }
     }
+
     try {
       const product = await Product.create({
         user: req.user._id,
-        title: req.body.title,
-        description: req.body.description,
-        cta: req.body.cta,
-        price: req.body.price,
         images,
+        ...req.body,
+        video: req.files.video[0].location,
       });
       return res.status(201).send(product);
     } catch (error) {
+      console.log("error", error);
       return res.status(400).send();
     }
   }
@@ -47,30 +53,60 @@ class ProductController {
    * @returns {JSON} - A JSON success response.
    *
    */
-  static async orderProduct(req, res) {
+  static async orderProducts(req, res) {
     try {
-      const product = await Product.findByIdAndUpdate(
-        req.params.productId,
-        { $inc: { numberInStock: -1 } },
-        { new: true }
-      );
-      if (!product) {
-        return res.status(404).send({ message: "product is unavailable" });
+      const products = [];
+      const data = [];
+      let returnable = false;
+      const sellerId = req.body.products[0].product.user;
+      for (let index = 0; index < req.body.products.length; index++) {
+        const item = req.body.products[index];
+        products.push({ product: item.product._id, quantity: item.quantity });
+        data.push({
+          item: item.product.title,
+          quantity: item.quantity,
+          price: item.product.price,
+        });
+        if (item.product.returnable) {
+          returnable = true;
+        }
+        await Product.findByIdAndUpdate(
+          item.product._id,
+          {
+            $inc: { numberInStock: -1 },
+          },
+          { new: true }
+        );
       }
+
       const order = await Order.create({
-        product: req.params.productId,
+        products,
+        seller: sellerId,
         buyer: req.user._id,
-        amount: product.price,
-        quantity: req.query.quantity || 1,
-        shippingFee: product.shippingFee,
+        amount: req.body.total,
+        shippingFee: req.body.shippingFee,
+        deliveryMethod: req.body.deliveryMethod,
+        deliveryMerchant: req.body.deliveryMerchant,
+        dileveryAddress: req.body.dileveryAddress,
       });
-      // if (product.isAssured) {
-      //   /* delay payment */
-      // } else {
-      //   /* pay seller instantly */
-      // }
+      //delete buyer's carts
+      await Cart.deleteMany({ user: req.user._id });
+      const buyer = await User.findById(req.user._id);
+      const seller = await User.findById(sellerId);
+      sendRecieptBuyer(buyer.email, data, buyer.firstName);
+      sendRecieptSeller(seller.email, data, seller.firstName);
+
+      if (returnable) {
+        /* delay payment */
+        seller.ledgerBalance += req.body.total;
+      } else {
+        /* pay seller instantly */
+        seller.availableBalance += req.body.total;
+      }
+      await seller.save();
       return res.status(201).send(order);
     } catch (error) {
+      console.log(error);
       return res.status(400).send();
     }
   }
@@ -92,10 +128,7 @@ class ProductController {
     if (!isValidOperation) {
       return res.status(400).send({ error: "Invalid Updates" });
     }
-    const order = await Order.findOne({
-      _id: req.params.orderId,
-      buyer: req.user._id,
-    });
+    const order = await Order.findById(req.params.orderId);
     if (!order) {
       return res.status(404).send({ error: "Not found" });
     }
@@ -113,6 +146,50 @@ class ProductController {
       return res.status(200).send(order);
     } catch (error) {
       return res.status(400).send(error);
+    }
+  }
+
+  /**
+   * Get my orders
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async getMyOrders(req, res) {
+    try {
+      const orders = await Order.find({
+        $or: [{ seller: req.user._id }, { buyer: req.user._id }],
+      }).populate({
+        path: "products",
+        populate: { path: "product", model: Product },
+      });
+
+      return res.status(200).send(orders);
+    } catch (error) {
+      return res.status(500).send();
+    }
+  }
+
+  /**
+   * Get single order
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async getSingleOrder(req, res) {
+    try {
+      const order = await Order.findById(req.params.orderId).populate({
+        path: "products",
+        populate: { path: "product", model: Product },
+      });
+
+      return res.status(200).send(order);
+    } catch (error) {
+      return res.status(500).send();
     }
   }
 
@@ -197,6 +274,140 @@ class ProductController {
       await product.save();
 
       return res.status(200).send(product);
+    } catch (error) {
+      return res.status(400).send(error);
+    }
+  }
+
+  /**
+   * Add a Product to cart
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async addProductToCart(req, res) {
+    try {
+      const product = await Product.findById(req.params.productId);
+      const carts = await Cart.find({ user: req.user._id }).populate("product");
+      const isFromDifferentStore = carts.find(
+        (item) => item.product.user !== product.user
+      );
+      if (isFromDifferentStore) {
+        await Cart.deleteMany({ user: req.user._id });
+      }
+      const existing = await Cart.findOne({
+        product: req.params.productId,
+        user: req.user._id,
+      });
+      if (existing) {
+        return res.status(400).send(error);
+      }
+
+      await Cart.create({
+        product: req.params.productId,
+        user: req.user._id,
+      });
+      const cartsNew = await Cart.find({ user: req.user._id }).populate(
+        "product"
+      );
+
+      return res.status(200).send({ carts: cartsNew });
+    } catch (error) {
+      return res.status(400).send(error);
+    }
+  }
+
+  /**
+   * Remove a Product from cart
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async removeProductFromCart(req, res) {
+    try {
+      const cart = await Cart.findByIdAndDelete(req.params.cartId);
+
+      return res.status(200).send(cart);
+    } catch (error) {
+      return res.status(400).send(error);
+    }
+  }
+
+  /**
+   * Update cart
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async updateProductInCart(req, res) {
+    try {
+      const cart = await Cart.findByIdAndUpdate(
+        req.params.cartId,
+        {
+          quantity: req.body.quantity,
+        },
+        { new: true }
+      );
+
+      return res.status(200).send(cart);
+    } catch (error) {
+      return res.status(400).send(error);
+    }
+  }
+
+  /**
+   * Load my carts
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async loadMyCarts(req, res) {
+    try {
+      const carts = await Cart.find({
+        user: req.user._id,
+      }).populate("product");
+
+      let storeAddress = "";
+      if (carts.length > 0) {
+        const seller = await User.findById(carts[0].product.user);
+        storeAddress = seller.storeAddress;
+      }
+
+      return res.status(200).send({ carts, storeAddress });
+    } catch (error) {
+      return res.status(400).send(error);
+    }
+  }
+
+  /**
+   * Add shipping Address
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async addShippingAdress(req, res) {
+    try {
+      const carts = await ShippingAddress.create({
+        user: req.user._id,
+      }).populate("product");
+
+      let storeAddress = "";
+      if (carts.length > 0) {
+        const seller = await User.findById(carts[0].product.user);
+        storeAddress = seller.storeAddress;
+      }
+
+      return res.status(200).send({ carts, storeAddress });
     } catch (error) {
       return res.status(400).send(error);
     }

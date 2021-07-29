@@ -1,5 +1,10 @@
 const sgMail = require("@sendgrid/mail");
-const { generateSignUpEmail, generateRecurringEmail } = require("./emails");
+const {
+  generateSignUpEmail,
+  generateRecurringEmail,
+  generateReciept,
+  generateRecieptForSeller,
+} = require("./emails");
 
 sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 
@@ -48,6 +53,38 @@ const sendWelcomeEmail = (email, name, userName, isAProUser = false) => {
       console.error(error);
     });
 };
+const sendRecieptBuyer = (email, data, name) => {
+  sgMail
+    .send({
+      to: email,
+      from: "monalyinc@gmail.com",
+      subject: "Your Order is Successful.",
+      text: `Your Order is Successful.`,
+      html: generateReciept(data, name),
+    })
+    .then((response) => {
+      console.log("Email sent");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+const sendRecieptSeller = (email, data, name) => {
+  sgMail
+    .send({
+      to: email,
+      from: "monalyinc@gmail.com",
+      subject: "An Order was completed.",
+      text: `An Order was completed.`,
+      html: generateReciept(data, name),
+    })
+    .then((response) => {
+      console.log("Email sent");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
 
 // sendWelcomeEmail("ayobamiu@gmail.com", "Usman");
 const sendCancellationEmail = (email, name) => {
@@ -85,4 +122,6 @@ module.exports = {
   sendCancellationEmail,
   resetPasswordMessage,
   sendRecurringDailyEmail,
+  sendRecieptBuyer,
+  sendRecieptSeller,
 };

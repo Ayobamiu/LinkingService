@@ -9,16 +9,26 @@ const router = express.Router();
 router.post(
   "/add",
   auth,
-  upload.array("images", 4),
+  upload.fields([{ name: "images" }, { name: "video", maxCount: 1 }]),
   AddValidProduct.validateData(),
   AddValidProduct.myValidationResult,
   ProductController.addProduct
 );
 
 router.delete("/:productId/remove", auth, ProductController.deleteProduct);
-router.post("/:productId/order", auth, ProductController.orderProduct);
+router.post("/order", auth, ProductController.orderProducts);
+router.get("/orders", auth, ProductController.getMyOrders);
+router.get("/orders/:orderId", ProductController.getSingleOrder);
 
 router.patch("/:orderId/update-order", auth, ProductController.updateOrder);
+router.get("/carts", auth, ProductController.loadMyCarts);
+router.post("/:productId/add-cart", auth, ProductController.addProductToCart);
+router.post(
+  "/:cartId/remove-cart",
+  auth,
+  ProductController.removeProductFromCart
+);
+router.patch("/:cartId/update-cart", ProductController.updateProductInCart);
 router.patch("/:productId/update", auth, ProductController.updateProduct);
 router.get("/:productId", ProductController.viewProduct);
 
