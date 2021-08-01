@@ -24,20 +24,25 @@ class ProductController {
    */
   static async addProduct(req, res) {
     let images = [];
+    let video = "";
+
     if (req.files.images) {
       for (let index = 0; index < req.files.images.length; index++) {
         const element = req.files.images[index];
         images.push({ image: element.location });
       }
     }
+    const data = {
+      user: req.user._id,
+      images,
+      ...req.body,
+    };
+    if (req.files.video) {
+      data.video = req.files.video[0].location;
+    }
 
     try {
-      const product = await Product.create({
-        user: req.user._id,
-        images,
-        ...req.body,
-        video: req.files.video[0].location,
-      });
+      const product = await Product.create(data);
       return res.status(201).send(product);
     } catch (error) {
       console.log("error", error);
