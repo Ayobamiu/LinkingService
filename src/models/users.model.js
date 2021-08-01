@@ -66,6 +66,12 @@ const userSchema = mongoose.Schema(
     storeLogo: {
       type: String,
     },
+    storePhoneOne: {
+      type: String,
+    },
+    storePhoneTwo: {
+      type: String,
+    },
     googleId: {
       type: String,
     },
@@ -134,6 +140,11 @@ userSchema.virtual("products", {
   localField: "_id",
   foreignField: "user",
 });
+userSchema.virtual("stores", {
+  ref: "EcommerceStore",
+  localField: "_id",
+  foreignField: "user",
+});
 userSchema.virtual("addresses", {
   ref: "ShippingAddress",
   localField: "_id",
@@ -161,7 +172,7 @@ userSchema.methods.generateAuthToken = async function () {
 
 userSchema.statics.findByCredentials = async (req, res, email, password) => {
   //check if user exists
-  const user = await User.findOne({ email }).populate("addresses");
+  const user = await User.findOne({ email }).populate("addresses stores");
   if (!user) {
     return res.status(404).send({
       error: "404 not found",

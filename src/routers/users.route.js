@@ -244,7 +244,7 @@ router.post("/users/logoutAll", auth, async (req, res) => {
 
 router.get("/me", auth, async (req, res) => {
   const user = await User.findOne({ _id: req.user._id }).populate({
-    path: "theme addresses",
+    path: "theme addresses stores",
   });
   res.send(user);
 });
@@ -291,6 +291,10 @@ router.patch("/me", auth, async (req, res) => {
     "profileTitle",
     "stackStyle",
     "theme",
+    "storeName",
+    "storeAddress",
+    "storePhoneOne",
+    "storePhoneTwo",
   ];
   const isValidOperation = updates.every((update) =>
     allowedUpdates.includes(update)

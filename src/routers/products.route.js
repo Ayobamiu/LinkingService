@@ -14,6 +14,15 @@ router.post(
   AddValidProduct.myValidationResult,
   ProductController.addProduct
 );
+router.post("/store", auth, upload.single("image"), ProductController.addStore);
+router.get("/store/:slug", ProductController.getStore);
+router.get("/stores", auth, ProductController.getStores);
+router.patch("/store/:storeId", ProductController.updateStore);
+router.patch(
+  "/store/:storeId/logo",
+  upload.single("image"),
+  ProductController.updateStoreLogo
+);
 
 router.delete("/:productId/remove", auth, ProductController.deleteProduct);
 router.post("/order", auth, ProductController.orderProducts);

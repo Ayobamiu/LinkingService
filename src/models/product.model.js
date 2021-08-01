@@ -46,6 +46,11 @@ const ProductSchema = mongoose.Schema(
       ref: "User",
       required: true,
     },
+    store: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "EcommerceStore",
+      required: true,
+    },
   },
   { timestamps: true }
 );

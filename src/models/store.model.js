@@ -5,12 +5,39 @@ const EcommerceStoreSchema = mongoose.Schema(
     name: {
       type: String,
     },
-    owner: {
+    slug: {
+      type: String,
+    },
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     description: {
+      type: String,
+    },
+    logo: {
+      type: String,
+    },
+    phoneOne: {
+      type: String,
+    },
+    phoneTwo: {
+      type: String,
+    },
+    address: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    latitude: {
+      type: String,
+    },
+    longitude: {
       type: String,
     },
     continent: {
@@ -19,9 +46,23 @@ const EcommerceStoreSchema = mongoose.Schema(
     country: {
       type: String,
     },
+    allowPickup: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   },
   { timestamps: true }
 );
+
+EcommerceStoreSchema.virtual("products", {
+  ref: "Product",
+  localField: "_id",
+  foreignField: "store",
+});
 const EcommerceStore = mongoose.model("EcommerceStore", EcommerceStoreSchema);
 
 module.exports = EcommerceStore;

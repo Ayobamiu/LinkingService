@@ -5,6 +5,8 @@ const Cart = require("../models/cart.model");
 const User = require("../models/users.model");
 const { sendRecieptBuyer, sendRecieptSeller } = require("../emails/account");
 const ShippingAddress = require("../models/shippingAddress.model");
+const EcommerceStore = require("../models/store.model");
+const { default: slugify } = require("slugify");
 
 /**
  *Contains Product Controller
@@ -14,6 +16,143 @@ const ShippingAddress = require("../models/shippingAddress.model");
  * @class ProductController
  */
 class ProductController {
+  /**
+   * Add a Store
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async addStore(req, res) {
+    const data = {
+      ...req.body,
+      user: req.user._id,
+    };
+    if (req.body.name) {
+      data.slug = slugify(req.body.name);
+    }
+    if (req.file) {
+      data.logo = req.file.location;
+    }
+    try {
+      const store = await EcommerceStore.create(data);
+      return res.status(201).send(store);
+    } catch (error) {
+      console.log("error", error);
+      return res.status(400).send();
+    }
+  }
+
+  /**
+   * Get a Stores
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async getStores(req, res) {
+    try {
+      const stores = await EcommerceStore.find({
+        user: req.user._id,
+      });
+      return res.status(200).send(stores);
+    } catch (error) {
+      console.log("error", error);
+      return res.status(400).send();
+    }
+  }
+
+  /**
+   * Get a Store
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async getStore(req, res) {
+    console.log("start");
+    try {
+      const store = await EcommerceStore.findOne({
+        slug: req.params.slug,
+      }).populate({ path: "products", model: Product });
+      console.log("store", store);
+      return res.status(200).send(store);
+    } catch (error) {
+      console.log("error", error);
+      return res.status(400).send();
+    }
+  }
+
+  /**
+   * Update store
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async updateStore(req, res) {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = [
+      "name",
+      "description",
+      "phoneOne",
+      "phoneTwo",
+      "address",
+      "city",
+      "state",
+      "continent",
+      "country",
+    ];
+    const isValidOperation = updates.every((update) =>
+      allowedUpdates.includes(update)
+    );
+    if (!isValidOperation) {
+      return res.status(400).send({ error: "Invalid Updates" });
+    }
+
+    try {
+      const store = await EcommerceStore.findById(req.params.storeId);
+      updates.forEach((update) => (store[update] = req.body[update]));
+
+      await store.save();
+      return res.status(200).send(store);
+    } catch (error) {
+      console.log("error", error);
+      return res.status(400).send();
+    }
+  }
+
+  /**
+   * Update store logo
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async updateStoreLogo(req, res) {
+    if (!req.file) {
+      return res.status(400).send({ error: "Invalid Update" });
+    }
+    try {
+      const store = await EcommerceStore.findByIdAndUpdate(
+        req.params.storeId,
+        {
+          logo: req.file.location,
+        },
+        { new: true }
+      );
+      return res.status(200).send({ logo: store.logo });
+    } catch (error) {
+      console.log("error", error);
+      return res.status(400).send();
+    }
+  }
+
   /**
    * Add a Product
    * @param {Request} req - Response object.
@@ -297,7 +436,7 @@ class ProductController {
       const product = await Product.findById(req.params.productId);
       const carts = await Cart.find({ user: req.user._id }).populate("product");
       const isFromDifferentStore = carts.find(
-        (item) => item.product.user !== product.user
+        (item) => item.product.store !== product.store
       );
       if (isFromDifferentStore) {
         await Cart.deleteMany({ user: req.user._id });
@@ -382,8 +521,8 @@ class ProductController {
 
       let storeAddress = "";
       if (carts.length > 0) {
-        const seller = await User.findById(carts[0].product.user);
-        storeAddress = seller.storeAddress;
+        const store = await EcommerceStore.findById(carts[0].product.store);
+        storeAddress = store;
       }
 
       return res.status(200).send({ carts, storeAddress });
