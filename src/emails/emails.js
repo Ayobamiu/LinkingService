@@ -1,5 +1,5 @@
 var Mailgen = require("mailgen");
-const linkToMonaly = process.env.ORIGIN_URL;
+const linkToMonaly = "https://www.monaly.co";
 const linktoDashboard = `${linkToMonaly}/dashboard`;
 const linktoPricing = `${linkToMonaly}/pricing`;
 const linktoInvite = `${linkToMonaly}/invite`;
@@ -435,7 +435,7 @@ var newEmail = {
 var emailHTML = mailGenerator.generate(newEmail);
 
 // Optionally, preview the generated HTML e-mail by writing it to a local file
-require("fs").writeFileSync("preview.html", emailHTML, "utf8");
+// require("fs").writeFileSync("preview.html", emailHTML, "utf8");
 
 module.exports = {
   generateSignUpEmail,
