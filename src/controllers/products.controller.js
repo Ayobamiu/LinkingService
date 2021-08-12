@@ -7,6 +7,7 @@ const { sendRecieptBuyer, sendRecieptSeller } = require("../emails/account");
 const ShippingAddress = require("../models/shippingAddress.model");
 const EcommerceStore = require("../models/store.model");
 const { default: slugify } = require("slugify");
+const Transaction = require("../models/transaction.model");
 
 /**
  *Contains Product Controller
@@ -552,6 +553,27 @@ class ProductController {
       }
 
       return res.status(200).send({ carts, storeAddress });
+    } catch (error) {
+      return res.status(400).send(error);
+    }
+  }
+
+  /**
+   * Add transaction
+   * @param {Request} req - Response object.
+   * @param {Response} res - The payload.
+   * @memberof ProductController
+   * @returns {JSON} - A JSON success response.
+   *
+   */
+  static async addTransaction(req, res) {
+    try {
+      const transaction = await Transaction.create({
+        user: req.user._id,
+        ...req.body,
+      });
+
+      return res.status(201).send({ transaction });
     } catch (error) {
       return res.status(400).send(error);
     }

@@ -15,6 +15,7 @@ router.post(
   ProductController.addProduct
 );
 router.post("/store", auth, upload.single("image"), ProductController.addStore);
+router.post("/add-transaction", auth, ProductController.addTransaction);
 router.get("/store/:slug", ProductController.getStore);
 router.get("/stores", auth, ProductController.getStores);
 router.patch("/store/:storeId", ProductController.updateStore);

@@ -40,6 +40,7 @@ const {
 const Themes = require("../models/themes.model");
 const UserView = require("../models/artistViews.model");
 const ShippingAddress = require("../models/shippingAddress.model");
+const Transaction = require("../models/transaction.model");
 
 const router = express.Router();
 
@@ -265,6 +266,16 @@ router.get("/me/views", auth, async (req, res) => {
     return country;
   });
   res.send({ visitors, countries: worldLowRes });
+});
+
+router.get("/me/transactions", auth, async (req, res) => {
+  try {
+    const transactions = await Transaction.find({ user: req.user._id });
+
+    res.status(200).send({ transactions });
+  } catch (error) {
+    res.status(500).send({ error });
+  }
 });
 
 router.delete("/me", auth, async (req, res) => {
