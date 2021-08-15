@@ -27,6 +27,9 @@ const OrderSchema = mongoose.Schema(
         },
       },
     ],
+    invoice: {
+      type: String,
+    },
     deliveryMethod: {
       type: String,
       default: "pickUp",

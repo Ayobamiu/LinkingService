@@ -69,19 +69,6 @@ const monalySignUpEmailBody = (userName, name, isAProUser) => {
   }
   return data;
 };
-const data = [
-  {
-    item: "Event-driven I/O server-side JavaScript environment based on V8.",
-    quantity: 2,
-    price: "$10.99",
-  },
-  {
-    item:
-      "Programmatically create beautiful e-mails using plain old JavaScript.",
-    quantity: 3,
-    price: "$1.99",
-  },
-];
 
 const recieptForSeller = (receiptData, name) => {
   const data = {
@@ -138,7 +125,7 @@ const recieptForSeller = (receiptData, name) => {
   };
   return data;
 };
-const reciept = (receiptData, name) => {
+const reciept = (receiptData, name, docum = null) => {
   const data = {
     goToAction: {
       text: "Go to Dashboard",
@@ -164,6 +151,14 @@ const reciept = (receiptData, name) => {
       },
     },
     action: [
+      {
+        instructions: "Download Transaction Reciept here",
+        button: {
+          color: "#ef476f", // Optional action button color
+          text: "Download Reciept",
+          link: docum,
+        },
+      },
       {
         instructions:
           "You can check the status of your order and more in your dashboard",
@@ -390,9 +385,9 @@ const generateSignUpEmail = (userName, name, isAProUser) => {
   const signUpEmailBody = mailGenerator.generate(signUpEmail);
   return signUpEmailBody;
 };
-const generateReciept = (data, name) => {
+const generateReciept = (data, name, docum = null) => {
   var receiptEmail = {
-    body: reciept(data, name),
+    body: reciept(data, name, docum),
   };
   const receiptEmailBody = mailGenerator.generate(receiptEmail);
   return receiptEmailBody;
@@ -424,15 +419,15 @@ const generateRecurringEmail = (
   return generated;
 };
 
-var newEmail = {
-  body: recieptForSeller(data, "Usman Ayobami"),
-};
+// var newEmail = {
+//   body: recieptForSeller(data, "Usman Ayobami"),
+// };
 
 // Generate an HTML email with the provided contents
 
 // Generate the plaintext version of the e-mail (for clients that do not support HTML)
 // var emailText = mailGenerator.generatePlaintext(signUpEmail);
-var emailHTML = mailGenerator.generate(newEmail);
+// var emailHTML = mailGenerator.generate(newEmail);
 
 // Optionally, preview the generated HTML e-mail by writing it to a local file
 // require("fs").writeFileSync("preview.html", emailHTML, "utf8");

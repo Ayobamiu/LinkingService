@@ -8,6 +8,7 @@ const ShippingAddress = require("../models/shippingAddress.model");
 const EcommerceStore = require("../models/store.model");
 const { default: slugify } = require("slugify");
 const Transaction = require("../models/transaction.model");
+const { createInvoice } = require("../documents/createInvoice");
 
 /**
  *Contains Product Controller
@@ -204,9 +205,34 @@ class ProductController {
       const data = [];
       let returnable = false;
       const sellerId = req.body.products[0].product.user;
+      const storeId = req.body.products[0].product.store;
+      const store = await EcommerceStore.findById(storeId);
+
+      const invoice = {
+        shipping: {},
+        items: [],
+        subtotal: null,
+        paid: null,
+        invoice_nr: null,
+      };
+      if (req.body.dileveryAddress) {
+        const dileveryAddress = await ShippingAddress.findById(
+          req.body.dileveryAddress
+        );
+
+        invoice.shipping = {
+          name: dileveryAddress.name,
+          address: dileveryAddress.address,
+          city: dileveryAddress.city,
+          country: dileveryAddress.country,
+          state: dileveryAddress.state,
+          postal_code: dileveryAddress.zip,
+        };
+      }
       for (let index = 0; index < req.body.products.length; index++) {
         const item = req.body.products[index];
         products.push({ product: item.product._id, quantity: item.quantity });
+
         data.push({
           item: item.product.title,
           quantity: item.quantity,
@@ -215,16 +241,25 @@ class ProductController {
         if (item.product.returnable) {
           returnable = true;
         }
-        await Product.findByIdAndUpdate(
+        const productDetails = await Product.findByIdAndUpdate(
           item.product._id,
           {
             $inc: { numberInStock: -1 },
           },
           { new: true }
         );
+        invoice.items.push({
+          item: productDetails.title,
+          description: productDetails.description,
+          quantity: item.quantity,
+          amount: productDetails.price,
+        });
       }
+      invoice.subtotal = req.body.total - req.body.shippingFee;
+      invoice.shipping = req.body.total;
+      invoice.paid = req.body.total;
 
-      const order = await Order.create({
+      const orderData = {
         products,
         seller: sellerId,
         buyer: req.user._id,
@@ -232,13 +267,22 @@ class ProductController {
         shippingFee: req.body.shippingFee,
         deliveryMethod: req.body.deliveryMethod,
         deliveryMerchant: req.body.deliveryMerchant,
-        dileveryAddress: req.body.dileveryAddress,
-      });
+      };
+      if (req.body.dileveryAddress) {
+        orderData.dileveryAddress = req.body.dileveryAddress;
+      }
+      const order = await Order.create(orderData);
+      invoice.invoice_nr = order._id;
+      //add invoice to order
+      const fileTosend = await createInvoice(invoice, order._id, store);
+
       //delete buyer's carts
+
       await Cart.deleteMany({ user: req.user._id });
       const buyer = await User.findById(req.user._id);
       const seller = await User.findById(sellerId);
-      sendRecieptBuyer(buyer.email, data, buyer.firstName);
+      sendRecieptBuyer(buyer.email, data, buyer.firstName, fileTosend);
+      await order.update({ invoice: fileTosend });
       sendRecieptSeller(seller.email, data, seller.firstName);
 
       if (returnable) {
@@ -251,7 +295,6 @@ class ProductController {
       await seller.save();
       return res.status(201).send(order);
     } catch (error) {
-      console.log(error);
       return res.status(400).send();
     }
   }

@@ -8,6 +8,9 @@ const {
 
 sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 
+const fromEmail = "contact@monaly.co";
+const fromname = "Monaly";
+
 const sendRecurringDailyEmail = (
   email,
   name,
@@ -19,7 +22,11 @@ const sendRecurringDailyEmail = (
   sgMail
     .send({
       to: email,
-      from: "monalyinc@gmail.com",
+      from: {
+        email: fromEmail,
+        name: fromname,
+      },
+
       subject: "Your Account is getting Attention",
       text: `${name}, Your Account is getting Attention.`,
       html: generateRecurringEmail(
@@ -41,7 +48,11 @@ const sendWelcomeEmail = (email, name, userName, isAProUser = false) => {
   sgMail
     .send({
       to: email,
-      from: "monalyinc@gmail.com",
+      from: {
+        email: fromEmail,
+        name: fromname,
+      },
+
       subject: "Thanks for coming!!",
       text: `Welcome to Monaly ${name}.`,
       html: generateSignUpEmail(userName, name, isAProUser),
@@ -53,14 +64,17 @@ const sendWelcomeEmail = (email, name, userName, isAProUser = false) => {
       console.error(error);
     });
 };
-const sendRecieptBuyer = (email, data, name) => {
+const sendRecieptBuyer = (email, data, name, docum) => {
   sgMail
     .send({
       to: email,
-      from: "monalyinc@gmail.com",
+      from: {
+        email: fromEmail,
+        name: fromname,
+      },
       subject: "Your Order is Successful.",
       text: `Your Order is Successful.`,
-      html: generateReciept(data, name),
+      html: generateReciept(data, name, docum),
     })
     .then((response) => {
       console.log("Email sent");
@@ -73,7 +87,11 @@ const sendRecieptSeller = (email, data, name) => {
   sgMail
     .send({
       to: email,
-      from: "monalyinc@gmail.com",
+      from: {
+        email: fromEmail,
+        name: fromname,
+      },
+
       subject: "An Order was completed.",
       text: `An Order was completed.`,
       html: generateReciept(data, name),
@@ -90,7 +108,10 @@ const sendRecieptSeller = (email, data, name) => {
 const sendCancellationEmail = (email, name) => {
   sgMail.send({
     to: email,
-    from: "usman.ayobami.g20@gmail.com",
+    from: {
+      email: fromEmail,
+      name: fromname,
+    },
     subject: `${name}, we will miss you.`,
     text: `We'll miss you ${name}. We wish we could keep you here longer.`,
   });
@@ -99,7 +120,10 @@ const sendCancellationEmail = (email, name) => {
 const sendNewPromotionEmail = (email, name, newPromotion) => {
   sgMail.send({
     to: email,
-    from: "usman.ayobami.g20@gmail.com",
+    from: {
+      email: fromEmail,
+      name: fromname,
+    },
     subject: `${newPromotion.user} added a new ${newPromotion.type}`,
     text: `${newPromotion.name} just added a new ${newPromotion.type}. Check it out here ${newPromotion.link}`,
     html: `<p>${newPromotion.name} just added a new ${newPromotion.type}. Check it out here <a href=${newPromotion.link}>here</a></p>`,
@@ -109,7 +133,10 @@ const sendNewPromotionEmail = (email, name, newPromotion) => {
 const resetPasswordMessage = (email, token) => {
   const msg = {
     to: email,
-    from: "usman.ayobami.g20@gmail.com", // Use the email address or domain you verified above
+    from: {
+      email: fromEmail,
+      name: fromname,
+    },
     subject: "Reset Password",
     text: `Click the followiing link to reset password  ${process.env.ORIGIN_URL}/reset-password/${token}. This link expires in 1 hour.`,
   };
