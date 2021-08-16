@@ -2,8 +2,8 @@ const PDFDocument = require("pdfkit");
 const aws = require("aws-sdk");
 
 aws.config.update({
-  secretAccessKey: "X8PK4qKNlB9zxctYaTvMurYHsdb3m37KDXpbNiTX",
-  accessKeyId: "AKIAJGJB2WJ2BTSDABVA",
+  secretAccessKey: process.env.S3_ACCESS_SECRET,
+  accessKeyId: process.env.S3_ACCESS_KEY,
   region: "us-east-2",
   AWS_SDK_LOAD_CONFIG: 1,
 });
