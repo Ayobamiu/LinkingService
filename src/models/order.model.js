@@ -58,7 +58,11 @@ const OrderSchema = mongoose.Schema(
     shippingFee: {
       type: Number,
     },
-
+    store: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "EcommerceStore",
+      required: true,
+    },
     eta: {
       type: Date,
       default: new Date(+new Date() + 7 * 24 * 60 * 60 * 1000),

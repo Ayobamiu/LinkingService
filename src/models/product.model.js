@@ -12,6 +12,9 @@ const ProductSchema = mongoose.Schema(
     title: {
       type: String,
     },
+    features: {
+      type: Array,
+    },
     description: {
       type: String,
     },

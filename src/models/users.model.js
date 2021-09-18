@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const slugify = require("slugify");
 var uniqueSlug = require("unique-slug");
+const EcommerceStore = require("./store.model");
 
 // var randomSlug = uniqueSlug()
 // var fileSlug = uniqueSlug('/etc/passwd')
@@ -73,6 +74,9 @@ const userSchema = mongoose.Schema(
       type: String,
     },
     googleId: {
+      type: String,
+    },
+    expoPushToken: {
       type: String,
     },
     theme: {
@@ -163,6 +167,33 @@ userSchema.methods.generateAuthToken = async function () {
   const user = this;
   const token = jwt.sign(
     { _id: user._id.toString(), user },
+    process.env.JWT_SECRET
+  );
+  user.tokens = user.tokens.concat({ token });
+  await user.save();
+  return token;
+};
+
+userSchema.methods.generateAuthTokenLite = async function () {
+  const user = this;
+  const stores = await EcommerceStore.find({ user: user._id });
+  let storeIds = stores.map((a) => a._id);
+
+  const token = jwt.sign(
+    {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      userName: user.userName,
+      profileTitle: user.profileTitle,
+      email: user.email,
+      bio: user.bio,
+      coverPhoto: user.coverPhoto,
+      profilePhoto: user.profilePhoto,
+      availableBalance: user.availableBalance,
+      ledgerBalance: user.ledgerBalance,
+      stores: storeIds,
+    },
     process.env.JWT_SECRET
   );
   user.tokens = user.tokens.concat({ token });

@@ -16,6 +16,9 @@ const EcommerceStoreSchema = mongoose.Schema(
     description: {
       type: String,
     },
+    banner: {
+      type: String,
+    },
     logo: {
       type: String,
     },

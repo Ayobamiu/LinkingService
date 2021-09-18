@@ -14,8 +14,15 @@ router.post(
   AddValidProduct.myValidationResult,
   ProductController.addProduct
 );
-router.post("/store", auth, upload.single("image"), ProductController.addStore);
+router.post(
+  "/store",
+  auth,
+  upload.fields([{ name: "logo" }, { name: "image" }]),
+  ProductController.addStore
+);
 router.post("/add-transaction", auth, ProductController.addTransaction);
+router.get("/store/products/:storeId", ProductController.getStoreProducts);
+router.get("/store/:storeId", ProductController.getStoreAndProducts);
 router.get("/store/:slug", ProductController.getStore);
 router.get("/stores", auth, ProductController.getStores);
 router.patch("/store/:storeId", ProductController.updateStore);
@@ -25,9 +32,19 @@ router.patch(
   ProductController.updateStoreLogo
 );
 
+router.patch(
+  "/add-image/:productId",
+  upload.single("image"),
+  ProductController.addProductImage
+);
+router.patch(
+  "/remove-image/:productId/:imageId",
+  ProductController.deleteProductImage
+);
 router.delete("/:productId/remove", auth, ProductController.deleteProduct);
 router.post("/order", auth, ProductController.orderProducts);
 router.get("/orders", auth, ProductController.getMyOrders);
+// router.get("/orders/:store",  ProductController.getMyStoreOrders);
 router.get("/orders/:orderId", ProductController.getSingleOrder);
 
 router.patch("/:orderId/update-order", auth, ProductController.updateOrder);

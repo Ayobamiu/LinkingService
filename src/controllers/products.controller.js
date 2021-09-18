@@ -10,32 +10,21 @@ const { default: slugify } = require("slugify");
 const Transaction = require("../models/transaction.model");
 const { createInvoice } = require("../documents/createInvoice");
 
-/**
- *Contains Product Controller
- *
- *
- *
- * @class ProductController
- */
 class ProductController {
-  /**
-   * Add a Store
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async addStore(req, res) {
     const data = {
       ...req.body,
       user: req.user._id,
     };
+    console.log("data", data);
     if (req.body.name) {
       data.slug = slugify(req.body.name);
     }
-    if (req.file) {
-      data.logo = req.file.location;
+    if (req.files && req.files.banner) {
+      data.banner = req.files.banner[0].location;
+    }
+    if (req.files && req.files.logo) {
+      data.logo = req.files.logo[0].location;
     }
     try {
       const store = await EcommerceStore.create(data);
@@ -46,14 +35,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Get a Stores
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async getStores(req, res) {
     try {
       const stores = await EcommerceStore.find({
@@ -66,14 +47,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Get a Store
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async getStore(req, res) {
     console.log("start");
     try {
@@ -88,14 +61,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Update store
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async updateStore(req, res) {
     const updates = Object.keys(req.body);
     const allowedUpdates = [
@@ -128,14 +93,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Update store logo
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async updateStoreLogo(req, res) {
     if (!req.file) {
       return res.status(400).send({ error: "Invalid Update" });
@@ -155,19 +112,9 @@ class ProductController {
     }
   }
 
-  /**
-   * Add a Product
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async addProduct(req, res) {
     let images = [];
-    let video = "";
-
-    if (req.files.images) {
+    if (req.files && req.files.images) {
       for (let index = 0; index < req.files.images.length; index++) {
         const element = req.files.images[index];
         images.push({ image: element.location });
@@ -178,7 +125,7 @@ class ProductController {
       images,
       ...req.body,
     };
-    if (req.files.video) {
+    if (req.files && req.files.video) {
       data.video = req.files.video[0].location;
     }
 
@@ -191,14 +138,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Order a Product
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async orderProducts(req, res) {
     try {
       const products = [];
@@ -267,6 +206,7 @@ class ProductController {
         shippingFee: req.body.shippingFee,
         deliveryMethod: req.body.deliveryMethod,
         deliveryMerchant: req.body.deliveryMerchant,
+        store: storeId,
       };
       if (req.body.dileveryAddress) {
         orderData.dileveryAddress = req.body.dileveryAddress;
@@ -299,14 +239,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Update an Order
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async updateOrder(req, res) {
     const updates = Object.keys(req.body);
     const allowedUpdates = ["status", "dileveryAddress", "quantity", "eta"];
@@ -337,14 +269,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Get my orders
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async getMyOrders(req, res) {
     try {
       const orders = await Order.find({
@@ -360,14 +284,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Get single order
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async getSingleOrder(req, res) {
     try {
       const order = await Order.findById(req.params.orderId).populate({
@@ -381,14 +297,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Delete a Product
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async deleteProduct(req, res) {
     try {
       const product = await Product.findOneAndDelete({
@@ -404,14 +312,6 @@ class ProductController {
     }
   }
 
-  /**
-   * View a Product
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async viewProduct(req, res) {
     try {
       const product = await Product.findById(req.params.productId);
@@ -425,24 +325,17 @@ class ProductController {
     }
   }
 
-  /**
-   * Update a Product
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async updateProduct(req, res) {
     const updates = Object.keys(req.body);
     const allowedUpdates = [
-      "title",
+      "cta",
       "description",
+      "features",
+      "isAssured",
+      "numberInStock",
       "price",
       "shippingFee",
-      "numberInStock",
-      "isAssured",
-      "cta",
+      "title",
     ];
     const isValidOperation = updates.every((update) =>
       allowedUpdates.includes(update)
@@ -467,14 +360,49 @@ class ProductController {
     }
   }
 
-  /**
-   * Add a Product to cart
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
+  static async addProductImage(req, res) {
+    const product = await Product.findOne({
+      _id: req.params.productId,
+    });
+    if (!product) {
+      return res.status(404).send({ error: "Not found" });
+    }
+    try {
+      const images = product.images;
+      if (req.file) {
+        product.images = [...images, { image: req.file.location }];
+      }
+      await product.save();
+
+      return res.status(200).send(product);
+    } catch (error) {
+      return res.status(400).send(error);
+    }
+  }
+
+  static async deleteProductImage(req, res) {
+    const product = await Product.findOne({
+      _id: req.params.productId,
+    });
+    if (!product) {
+      return res.status(404).send({ error: "Not found" });
+    }
+    try {
+      const images = product.images;
+      const indexOf = images.findIndex(
+        (image) => image._id == req.params.imageId
+      );
+      if (indexOf !== -1) {
+        images.splice(indexOf, 1);
+      }
+      await product.save();
+
+      return res.status(200).send(product);
+    } catch (error) {
+      return res.status(400).send(error);
+    }
+  }
+
   static async addProductToCart(req, res) {
     try {
       const product = await Product.findById(req.params.productId);
@@ -507,14 +435,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Remove a Product from cart
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async removeProductFromCart(req, res) {
     try {
       const cart = await Cart.findByIdAndDelete(req.params.cartId);
@@ -525,14 +445,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Update cart
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async updateProductInCart(req, res) {
     try {
       const cart = await Cart.findByIdAndUpdate(
@@ -549,14 +461,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Load my carts
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async loadMyCarts(req, res) {
     try {
       const carts = await Cart.find({
@@ -575,14 +479,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Add shipping Address
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async addShippingAdress(req, res) {
     try {
       const carts = await ShippingAddress.create({
@@ -601,14 +497,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Add transaction
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof ProductController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async addTransaction(req, res) {
     try {
       const transaction = await Transaction.create({
@@ -619,6 +507,30 @@ class ProductController {
       return res.status(201).send({ transaction });
     } catch (error) {
       return res.status(400).send(error);
+    }
+  }
+
+  static async getStoreProducts(req, res) {
+    try {
+      const store = await EcommerceStore.findById(req.params.storeId).populate({
+        path: "products",
+        model: Product,
+        options: { sort: { createdAt: -1 } },
+      });
+      return res.status(200).send({ products: store.products });
+    } catch (error) {
+      console.log("error", error);
+      return res.status(400).send();
+    }
+  }
+
+  static async getStoreAndProducts(req, res) {
+    try {
+      const store = await EcommerceStore.findById(req.params.storeId);
+      return res.status(200).send({ store });
+    } catch (error) {
+      console.log("error", error);
+      return res.status(400).send();
     }
   }
 }

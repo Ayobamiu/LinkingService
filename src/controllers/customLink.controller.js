@@ -22,11 +22,15 @@ class CustomLinkController {
    */
   static async addCustomLink(req, res) {
     try {
-      const customLink = await CustomLink.create({
+      const data = {
         owner: req.user._id,
         title: req.body.title,
         link: req.body.link,
-      });
+      };
+      if (req.file) {
+        data.image = req.file.location;
+      }
+      const customLink = await CustomLink.create(data);
       return res.status(201).send(customLink);
     } catch (error) {
       return res.status(400).send();
