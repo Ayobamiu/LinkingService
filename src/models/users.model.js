@@ -127,6 +127,12 @@ userSchema.virtual("customLinks", {
   localField: "_id",
   foreignField: "owner",
 });
+userSchema.virtual("linksCount", {
+  ref: "CustomLink",
+  localField: "_id",
+  foreignField: "owner",
+  count: true, // And only get the number of docs
+});
 
 userSchema.virtual("platforms", {
   ref: "DigitalPlatform",
@@ -144,10 +150,22 @@ userSchema.virtual("products", {
   localField: "_id",
   foreignField: "user",
 });
+userSchema.virtual("productsCount", {
+  ref: "Product",
+  localField: "_id",
+  foreignField: "user",
+  count: true, // And only get the number of docs
+});
 userSchema.virtual("stores", {
   ref: "EcommerceStore",
   localField: "_id",
   foreignField: "user",
+});
+userSchema.virtual("storesCount", {
+  ref: "EcommerceStore",
+  localField: "_id",
+  foreignField: "user",
+  count: true, // And only get the number of docs
 });
 userSchema.virtual("addresses", {
   ref: "ShippingAddress",

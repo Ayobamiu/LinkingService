@@ -211,7 +211,11 @@ router.delete("/me/coverPhoto", auth, async (req, res) => {
 });
 
 router.get("/users", async (req, res) => {
-  const users = await User.find({});
+  const users = await User.find({})
+    .populate("linksCount productsCount storesCount")
+    .select(
+      "firstName lastName userName profilePhoto email linksCount productsCount storesCount"
+    );
   try {
     res.send(users);
   } catch (error) {

@@ -28,6 +28,9 @@ const EcommerceStoreSchema = mongoose.Schema(
     phoneTwo: {
       type: String,
     },
+    location: {
+      type: Object,
+    },
     address: {
       type: String,
     },
@@ -57,8 +60,8 @@ const EcommerceStoreSchema = mongoose.Schema(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  },
-  { timestamps: true }
+    timestamps: true,
+  }
 );
 
 EcommerceStoreSchema.virtual("products", {

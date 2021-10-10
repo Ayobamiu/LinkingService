@@ -1,6 +1,7 @@
 const Notifications = require("../models/notifications.model");
 const Order = require("../models/order.model");
 const Product = require("../models/product.model");
+const EcommerceStore = require("../models/store.model");
 const Transaction = require("../models/transaction.model");
 
 class StoreController {
@@ -8,9 +9,8 @@ class StoreController {
     try {
       const transactions = await Transaction.find({
         store: req.query.store,
-      })
-        .sort({ createdAt: -1 })
-        .select("description currency status amount createdAt");
+      }).sort({ createdAt: -1 });
+      // .select("description currency status amount createdAt type");
 
       return res.status(200).send(transactions);
     } catch (error) {
@@ -18,7 +18,6 @@ class StoreController {
     }
   }
   static async getMyStoreOrders(req, res) {
-    console.log("req.params.store", req.params.store);
     try {
       const orders = await Order.find({
         store: req.params.store,
@@ -26,8 +25,17 @@ class StoreController {
         path: "products",
         populate: { path: "product", model: Product, select: "title" },
       });
-      console.log("orders", orders);
       return res.status(200).send(orders);
+    } catch (error) {
+      return res.status(500).send();
+    }
+  }
+  static async getMyStores(req, res) {
+    try {
+      const stores = await EcommerceStore.find({
+        user: req.user._id,
+      });
+      return res.status(200).send(stores);
     } catch (error) {
       return res.status(500).send();
     }

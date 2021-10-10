@@ -16,9 +16,11 @@ class ProductController {
       ...req.body,
       user: req.user._id,
     };
-    console.log("data", data);
     if (req.body.name) {
       data.slug = slugify(req.body.name);
+    }
+    if (req.body.location) {
+      data.location = JSON.parse(req.body.location);
     }
     if (req.files && req.files.banner) {
       data.banner = req.files.banner[0].location;
@@ -30,7 +32,6 @@ class ProductController {
       const store = await EcommerceStore.create(data);
       return res.status(201).send(store);
     } catch (error) {
-      console.log("error", error);
       return res.status(400).send();
     }
   }
@@ -42,27 +43,26 @@ class ProductController {
       });
       return res.status(200).send(stores);
     } catch (error) {
-      console.log("error", error);
       return res.status(400).send();
     }
   }
 
   static async getStore(req, res) {
-    console.log("start");
+    console.log("Here");
     try {
       const store = await EcommerceStore.findOne({
         slug: req.params.slug,
       }).populate({ path: "products", model: Product });
-      console.log("store", store);
       return res.status(200).send(store);
     } catch (error) {
-      console.log("error", error);
       return res.status(400).send();
     }
   }
 
   static async updateStore(req, res) {
     const updates = Object.keys(req.body);
+    console.log("req.files", req.files);
+    console.log("req.body", req.body);
     const allowedUpdates = [
       "name",
       "description",
@@ -72,6 +72,8 @@ class ProductController {
       "city",
       "state",
       "continent",
+      "location",
+      "allowPickup",
       "country",
     ];
     const isValidOperation = updates.every((update) =>
@@ -84,11 +86,16 @@ class ProductController {
     try {
       const store = await EcommerceStore.findById(req.params.storeId);
       updates.forEach((update) => (store[update] = req.body[update]));
+      if (req.files && req.files.banner) {
+        store.banner = req.files.banner[0].location;
+      }
+      if (req.files && req.files.logo) {
+        store.logo = req.files.logo[0].location;
+      }
 
       await store.save();
       return res.status(200).send(store);
     } catch (error) {
-      console.log("error", error);
       return res.status(400).send();
     }
   }
@@ -107,7 +114,6 @@ class ProductController {
       );
       return res.status(200).send({ logo: store.logo });
     } catch (error) {
-      console.log("error", error);
       return res.status(400).send();
     }
   }
@@ -125,15 +131,20 @@ class ProductController {
       images,
       ...req.body,
     };
+    if (req.body.features) {
+      data.features = JSON.parse(req.body.features);
+    }
     if (req.files && req.files.video) {
       data.video = req.files.video[0].location;
     }
 
+    console.log("data", data);
+
     try {
       const product = await Product.create(data);
+      console.log("product", product);
       return res.status(201).send(product);
     } catch (error) {
-      console.log("error", error);
       return res.status(400).send();
     }
   }
@@ -298,16 +309,18 @@ class ProductController {
   }
 
   static async deleteProduct(req, res) {
+    console.log("product");
     try {
       const product = await Product.findOneAndDelete({
         _id: req.params.productId,
-        user: req.user._id,
       });
+      console.log("product 1", product);
       if (!product) {
         return res.status(404).send();
       }
       return res.status(200).send(product);
     } catch (error) {
+      console.log("error", error);
       return res.status(500).send();
     }
   }
@@ -335,6 +348,7 @@ class ProductController {
       "numberInStock",
       "price",
       "shippingFee",
+      "returnable",
       "title",
     ];
     const isValidOperation = updates.every((update) =>
@@ -345,7 +359,6 @@ class ProductController {
     }
     const product = await Product.findOne({
       _id: req.params.productId,
-      user: req.user._id,
     });
     if (!product) {
       return res.status(404).send({ error: "Not found" });
@@ -361,16 +374,23 @@ class ProductController {
   }
 
   static async addProductImage(req, res) {
+    console.log("srtarrt");
+    console.log("req.params.productId", req.params.productId);
     const product = await Product.findOne({
       _id: req.params.productId,
     });
+
+    console.log("req.files ", req.files);
     if (!product) {
       return res.status(404).send({ error: "Not found" });
     }
     try {
       const images = product.images;
-      if (req.file) {
-        product.images = [...images, { image: req.file.location }];
+      if (req.files && req.files.image) {
+        product.images = [...images, { image: req.files.image[0].location }];
+      }
+      if (req.files && req.files.video) {
+        product.video = req.files.video[0].location;
       }
       await product.save();
 
@@ -512,6 +532,7 @@ class ProductController {
 
   static async getStoreProducts(req, res) {
     try {
+      console.log("req.params.storeId", req.params.storeId);
       const store = await EcommerceStore.findById(req.params.storeId).populate({
         path: "products",
         model: Product,
@@ -519,7 +540,6 @@ class ProductController {
       });
       return res.status(200).send({ products: store.products });
     } catch (error) {
-      console.log("error", error);
       return res.status(400).send();
     }
   }
@@ -529,7 +549,6 @@ class ProductController {
       const store = await EcommerceStore.findById(req.params.storeId);
       return res.status(200).send({ store });
     } catch (error) {
-      console.log("error", error);
       return res.status(400).send();
     }
   }

@@ -10,22 +10,26 @@ router.post(
   "/add",
   auth,
   upload.fields([{ name: "images" }, { name: "video", maxCount: 1 }]),
-  AddValidProduct.validateData(),
-  AddValidProduct.myValidationResult,
+  // AddValidProduct.validateData(),
+  // AddValidProduct.myValidationResult,
   ProductController.addProduct
 );
 router.post(
   "/store",
   auth,
-  upload.fields([{ name: "logo" }, { name: "image" }]),
+  upload.fields([{ name: "logo" }, { name: "banner" }]),
   ProductController.addStore
 );
 router.post("/add-transaction", auth, ProductController.addTransaction);
 router.get("/store/products/:storeId", ProductController.getStoreProducts);
 router.get("/store/:storeId", ProductController.getStoreAndProducts);
-router.get("/store/:slug", ProductController.getStore);
+router.get("/store-by-slug/:slug", ProductController.getStore);
 router.get("/stores", auth, ProductController.getStores);
-router.patch("/store/:storeId", ProductController.updateStore);
+router.patch(
+  "/store/:storeId",
+  upload.fields([{ name: "banner" }, { name: "logo" }]),
+  ProductController.updateStore
+);
 router.patch(
   "/store/:storeId/logo",
   upload.single("image"),
@@ -33,21 +37,16 @@ router.patch(
 );
 
 router.patch(
-  "/add-image/:productId",
-  upload.single("image"),
-  ProductController.addProductImage
-);
-router.patch(
   "/remove-image/:productId/:imageId",
   ProductController.deleteProductImage
 );
-router.delete("/:productId/remove", auth, ProductController.deleteProduct);
+router.delete("/:productId/remove", ProductController.deleteProduct);
 router.post("/order", auth, ProductController.orderProducts);
 router.get("/orders", auth, ProductController.getMyOrders);
 // router.get("/orders/:store",  ProductController.getMyStoreOrders);
 router.get("/orders/:orderId", ProductController.getSingleOrder);
 
-router.patch("/:orderId/update-order", auth, ProductController.updateOrder);
+router.patch("/:orderId/update-order", ProductController.updateOrder);
 router.get("/carts", auth, ProductController.loadMyCarts);
 router.post("/:productId/add-cart", auth, ProductController.addProductToCart);
 router.post(
@@ -56,7 +55,14 @@ router.post(
   ProductController.removeProductFromCart
 );
 router.patch("/:cartId/update-cart", ProductController.updateProductInCart);
-router.patch("/:productId/update", auth, ProductController.updateProduct);
+router.patch("/:productId/update", ProductController.updateProduct);
 router.get("/:productId", ProductController.viewProduct);
-
+router.patch(
+  "/add-image/:productId",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "video", maxCount: 1 },
+  ]),
+  ProductController.addProductImage
+);
 module.exports = router;

@@ -215,7 +215,7 @@ const monaly24HoursViewsAndClickReportEmailBody = (
         viewsCount > 0 ? "s" : ""
       } and ${clicksCount} visitor${
         clicksCount > 0 ? "s" : ""
-      } visited your links in the last 24 hours.`,
+      } visited your links in the last week.`,
     ],
     action: [],
     outro: [
