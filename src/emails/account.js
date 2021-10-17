@@ -94,7 +94,7 @@ const sendRecieptSeller = (email, data, name) => {
 
       subject: "An Order was completed.",
       text: `An Order was completed.`,
-      html: generateReciept(data, name),
+      html: generateRecieptForSeller(data, name),
     })
     .then((response) => {
       console.log("Email sent");

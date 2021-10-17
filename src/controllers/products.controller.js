@@ -9,6 +9,7 @@ const EcommerceStore = require("../models/store.model");
 const { default: slugify } = require("slugify");
 const Transaction = require("../models/transaction.model");
 const { createInvoice } = require("../documents/createInvoice");
+const { sendPushNotification } = require("../utilities/pushNotifications");
 
 class ProductController {
   static async addStore(req, res) {
@@ -48,7 +49,6 @@ class ProductController {
   }
 
   static async getStore(req, res) {
-    console.log("Here");
     try {
       const store = await EcommerceStore.findOne({
         slug: req.params.slug,
@@ -61,8 +61,6 @@ class ProductController {
 
   static async updateStore(req, res) {
     const updates = Object.keys(req.body);
-    console.log("req.files", req.files);
-    console.log("req.body", req.body);
     const allowedUpdates = [
       "name",
       "description",
@@ -138,11 +136,8 @@ class ProductController {
       data.video = req.files.video[0].location;
     }
 
-    console.log("data", data);
-
     try {
       const product = await Product.create(data);
-      console.log("product", product);
       return res.status(201).send(product);
     } catch (error) {
       return res.status(400).send();
@@ -154,8 +149,8 @@ class ProductController {
       const products = [];
       const data = [];
       let returnable = false;
-      const sellerId = req.body.products[0].product.user;
-      const storeId = req.body.products[0].product.store;
+      const sellerId = req.body.products[0].user;
+      const storeId = req.body.products[0].store;
       const store = await EcommerceStore.findById(storeId);
 
       const invoice = {
@@ -181,18 +176,18 @@ class ProductController {
       }
       for (let index = 0; index < req.body.products.length; index++) {
         const item = req.body.products[index];
-        products.push({ product: item.product._id, quantity: item.quantity });
+        products.push({ product: item._id, quantity: item.quantity });
 
         data.push({
-          item: item.product.title,
+          item: item.title,
           quantity: item.quantity,
-          price: item.product.price,
+          price: item.price,
         });
-        if (item.product.returnable) {
+        if (item.returnable) {
           returnable = true;
         }
         const productDetails = await Product.findByIdAndUpdate(
-          item.product._id,
+          item._id,
           {
             $inc: { numberInStock: -1 },
           },
@@ -229,20 +224,40 @@ class ProductController {
 
       //delete buyer's carts
 
-      await Cart.deleteMany({ user: req.user._id });
+      // await Cart.deleteMany({ user: req.user._id });
+      await Transaction.create({
+        user: req.user._id,
+        description: `Order for ${products.length} product${
+          products.length > 1 ? "s" : ""
+        }`,
+        amount: req.body.total,
+        store: storeId,
+      });
       const buyer = await User.findById(req.user._id);
       const seller = await User.findById(sellerId);
       sendRecieptBuyer(buyer.email, data, buyer.firstName, fileTosend);
       await order.update({ invoice: fileTosend });
       sendRecieptSeller(seller.email, data, seller.firstName);
+      const populatedOrder = await Order.findById(order._id).populate(
+        "products.product"
+      );
+      await sendPushNotification(
+        "You have a new Order",
+        `Order for ${products.length} product${products.length > 1 ? "s" : ""}`,
+        seller.expoPushToken,
+        {
+          order: populatedOrder,
+          type: "order",
+        }
+      );
 
-      if (returnable) {
-        /* delay payment */
-        seller.ledgerBalance += req.body.total;
-      } else {
-        /* pay seller instantly */
-        seller.availableBalance += req.body.total;
-      }
+      // if (returnable) {
+      //   /* delay payment */
+      //   seller.ledgerBalance += req.body.total;
+      // } else {
+      //   /* pay seller instantly */
+      //   seller.availableBalance += req.body.total;
+      // }
       await seller.save();
       return res.status(201).send(order);
     } catch (error) {
@@ -284,10 +299,12 @@ class ProductController {
     try {
       const orders = await Order.find({
         $or: [{ seller: req.user._id }, { buyer: req.user._id }],
-      }).populate({
-        path: "products",
-        populate: { path: "product", model: Product },
-      });
+      })
+        .populate({
+          path: "products",
+          populate: { path: "product", model: Product },
+        })
+        .sort("createdAt", -1);
 
       return res.status(200).send(orders);
     } catch (error) {
@@ -309,18 +326,15 @@ class ProductController {
   }
 
   static async deleteProduct(req, res) {
-    console.log("product");
     try {
       const product = await Product.findOneAndDelete({
         _id: req.params.productId,
       });
-      console.log("product 1", product);
       if (!product) {
         return res.status(404).send();
       }
       return res.status(200).send(product);
     } catch (error) {
-      console.log("error", error);
       return res.status(500).send();
     }
   }
@@ -374,13 +388,10 @@ class ProductController {
   }
 
   static async addProductImage(req, res) {
-    console.log("srtarrt");
-    console.log("req.params.productId", req.params.productId);
     const product = await Product.findOne({
       _id: req.params.productId,
     });
 
-    console.log("req.files ", req.files);
     if (!product) {
       return res.status(404).send({ error: "Not found" });
     }
@@ -532,7 +543,6 @@ class ProductController {
 
   static async getStoreProducts(req, res) {
     try {
-      console.log("req.params.storeId", req.params.storeId);
       const store = await EcommerceStore.findById(req.params.storeId).populate({
         path: "products",
         model: Product,

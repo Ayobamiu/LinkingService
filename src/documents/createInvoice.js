@@ -38,7 +38,6 @@ const createInvoice = async (invoice, orderId, store) => {
     fileToSend = upload.Location;
     return fileToSend;
   } catch (error) {
-    console.log("error", error);
   }
 
   return fileToSend;

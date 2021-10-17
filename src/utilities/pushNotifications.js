@@ -111,16 +111,18 @@ let receiptIdChunks = expo.chunkPushNotificationReceiptIds(receiptIds);
 })();
 
 const sendPushNotification = async (
-  targetExpoPushToken,
+  title = "Monaly",
   message,
-  data = { _displayInForeground: true }
+  targetExpoPushToken,
+  data
 ) => {
   let chunks = expo.chunkPushNotifications([
     {
       to: targetExpoPushToken,
       sound: "default",
       body: message,
-      data,
+      data: { _displayInForeground: true, ...data },
+      title,
     },
   ]);
   let tickets = [];

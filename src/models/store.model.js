@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Transaction = require("./transaction.model");
 
 const EcommerceStoreSchema = mongoose.Schema(
   {
@@ -69,6 +70,26 @@ EcommerceStoreSchema.virtual("products", {
   localField: "_id",
   foreignField: "store",
 });
+
+// EcommerceStoreSchema.methods.toJSON = async function () {
+//   const data = this;
+//   const transaction = await Transaction.aggregate([
+//     {
+//       $match: {
+//         type: "plus",
+//       },
+//     },
+//     {
+//       $group: {
+//         _id: "$_id",
+//         total: { $sum: "$amount" },
+//       },
+//     },
+//   ]);
+//   const store = data.toObject();
+//   store.total = transaction.total;
+//   return store;
+// };
 const EcommerceStore = mongoose.model("EcommerceStore", EcommerceStoreSchema);
 
 module.exports = EcommerceStore;

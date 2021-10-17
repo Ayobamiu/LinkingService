@@ -33,12 +33,9 @@ const messageAllUser = async () => {
       viewCount,
       clickCount
     );
-    // console.log(user.userName, clickCount, viewCount);
   }
 };
 
-// console.log(today);
-// console.log(yesterday);
 
 // messageAllUser();
 const rule = new schedule.RecurrenceRule();
@@ -71,18 +68,42 @@ var cronJob = new CronJob(
         user: user._id,
         createdAt: { $gte: yesterday, $lte: today },
       });
-      if (user.linksCount === 0) {
-        sgMail
-          .send({
-            to: "ayobamiu@gmail.com",
-            from: {
-              email: fromEmail,
-              name: fromname,
-            },
 
-            subject: "About your Monaly Link.",
+      sendRecurringDailyEmail(
+        user.email,
+        user.firstName,
+        user.userName,
+        false,
+        viewCount,
+        clickCount
+      );
+    }
+  },
+  null,
+  true,
+  "Africa/Lagos"
+);
+cronJob.start();
 
-            html: `<!DOCTYPE html>
+const reachOutToInactives = async () => {
+  const users = await User.find({}).populate(
+    "linksCount productsCount storesCount"
+  );
+  for (let index = 0; index < users.length; index++) {
+    const user = users[index];
+
+    if (user.linksCount === 0) {
+      sgMail
+        .send({
+          to: user.email,
+          from: {
+            email: fromEmail,
+            name: fromname,
+          },
+
+          subject: "About your Monaly Link.",
+
+          html: `<!DOCTYPE html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
@@ -119,30 +140,16 @@ var cronJob = new CronJob(
       </body>
     </html>
     `,
-          })
-          .then((response) => {
-            console.log("Email sent");
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      } else {
-        sendRecurringDailyEmail(
-          user.email,
-          user.firstName,
-          user.userName,
-          false,
-          viewCount,
-          clickCount
-        );
-      }
-      // console.log(user.userName, clickCount, viewCount);
+        })
+        .then((response) => {
+          console.log("Email sent");
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
-  },
-  null,
-  true,
-  "Africa/Lagos"
-);
-cronJob.start();
-
+    // console.log(user.userName, clickCount, viewCount);
+  }
+};
+// reachOutToInactives();
 module.exports = job;

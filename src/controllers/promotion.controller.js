@@ -72,7 +72,6 @@ class PromotionController {
           email: follower.follower.email,
         });
       });
-      console.log(followersList);
       return res.status(201).send(promotion);
     } catch (error) {
       return res.status(400).send();

@@ -31,16 +31,14 @@ class WithdrawalController {
           }
         )
         .catch((err) => {
-          console.log("err", err.response.data);
         });
-      console.log("response", response);
       if (response.data.status === "error") {
         return res.status(400).send({ message: response.data.message });
       }
       const transaction = await Transaction.create({
         user: req.user._id,
         description: "Withdrawal to own account",
-        amount: req.body.amount,
+        amount: req.body.amount * 1.17,
         store: req.body.store,
         data: req.body,
         reference,

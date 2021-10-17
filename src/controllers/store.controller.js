@@ -21,10 +21,12 @@ class StoreController {
     try {
       const orders = await Order.find({
         store: req.params.store,
-      }).populate({
-        path: "products",
-        populate: { path: "product", model: Product, select: "title" },
-      });
+      })
+        .populate({
+          path: "products",
+          populate: { path: "product", model: Product, select: "title" },
+        })
+        .sort({ createdAt: -1 });
       return res.status(200).send(orders);
     } catch (error) {
       return res.status(500).send();
@@ -35,7 +37,27 @@ class StoreController {
       const stores = await EcommerceStore.find({
         user: req.user._id,
       });
-      return res.status(200).send(stores);
+      const data = [];
+      for (let index = 0; index < stores.length; index++) {
+        const store = stores[index];
+        const transaction = await Transaction.aggregate([
+          {
+            $group: {
+              _id: { type: "$type" },
+              total: { $sum: "$amount" },
+            },
+          },
+        ]);
+        const plus = transaction.find((i) => i._id.type === "plus");
+        const minus = transaction.find((i) => i._id.type === "minus");
+        const total = transaction.find((i) => i._id.type === "plus");
+        const destOb = store.toObject();
+        destOb.availableBalance = plus.total - minus.total;
+
+        data.push(destOb);
+      }
+
+      return res.status(200).send(data);
     } catch (error) {
       return res.status(500).send();
     }

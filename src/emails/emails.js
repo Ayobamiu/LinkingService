@@ -107,7 +107,7 @@ const recieptForSeller = (receiptData, name) => {
         button: {
           color: "#ef476f", // Optional action button color
           text: "Go to Dashboard",
-          link: linktoDashboard,
+          link: linktoOrders,
         },
       },
       {
@@ -116,7 +116,7 @@ const recieptForSeller = (receiptData, name) => {
         button: {
           color: "#ef476f", // Optional action button color
           text: "Order Details",
-          link: linktoDashboard,
+          link: linktoOrders,
         },
       },
     ],

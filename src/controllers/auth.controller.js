@@ -71,10 +71,8 @@ class AuthController {
       }
 
       const token = await user.generateAuthTokenLite();
-      console.log("token", token);
       res.send(token);
     } catch (error) {
-      console.log("error", error);
       res
         .status(400)
         .send({ error: "400 Bad request", message: "Unable to login" });
@@ -122,12 +120,7 @@ class AuthController {
           message: "User not found.",
         });
       }
-      console.log("User registered fro push notification", {
-        _id: user._id,
-        firstName: user.firstName,
-        email: user.email,
-        expoPushToken: user.expoPushToken,
-      });
+
       res.send({
         _id: user._id,
         firstName: user.firstName,
@@ -145,21 +138,17 @@ class AuthController {
   static async sendNotification(req, res) {
     try {
       const user = await User.findById(req.user._id);
-      console.log("expoPushToken", user);
 
       await sendPushNotification(
-        user.expoPushToken,
-        "How is the Monaly experience?"
+        "How is the Monaly experience?",
+        "How is the Monaly experience?",
+        user.expoPushToken
       );
-      console.log("success");
       res.send("success");
-    } catch (error) {
-      console.log("error", error);
-    }
+    } catch (error) {}
   }
 
   static async addBankRecord(req, res) {
-    console.log("req.body", req.body);
     try {
       const record = await BankRecord.create({
         user: req.user._id,
