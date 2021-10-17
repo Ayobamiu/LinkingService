@@ -36,7 +36,6 @@ const messageAllUser = async () => {
   }
 };
 
-
 // messageAllUser();
 const rule = new schedule.RecurrenceRule();
 rule.dayOfWeek = [0, new schedule.Range(0, 6)];
@@ -51,7 +50,7 @@ const job = schedule.scheduleJob(rule, function () {
 // job.cancel();
 
 var cronJob = new CronJob(
-  "5 8 * * 0",
+  "5 11 * * 0",
   async function () {
     const users = await User.find({}).populate(
       "linksCount productsCount storesCount"
