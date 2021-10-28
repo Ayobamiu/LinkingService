@@ -19,7 +19,13 @@ const ShippingAddressSchema = mongoose.Schema(
     city: {
       type: String,
     },
+    state_code: {
+      type: String,
+    },
     state: {
+      type: String,
+    },
+    country_code: {
       type: String,
     },
     country: {

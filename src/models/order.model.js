@@ -67,6 +67,15 @@ const OrderSchema = mongoose.Schema(
       type: Date,
       default: new Date(+new Date() + 7 * 24 * 60 * 60 * 1000),
     },
+    tracking_code: {
+      type: String,
+    },
+    shippingData: {
+      type: Object,
+    },
+    shipping: {
+      type: Object,
+    },
   },
   { timestamps: true }
 );

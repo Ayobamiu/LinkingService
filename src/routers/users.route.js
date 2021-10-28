@@ -396,30 +396,9 @@ router.patch("/reset-password/:token", async (req, res) => {
 router.post("/add-address", auth, async (req, res) => {
   try {
     // const user = await User.findById(req.user._id)
-    const {
-      name,
-      address,
-      email,
-      city,
-      country,
-      state,
-      zip,
-      phoneNumber,
-      latitude,
-      longitude,
-    } = req.body;
 
     const newAddress = await ShippingAddress.create({
-      name,
-      address,
-      email,
-      city,
-      country,
-      state,
-      zip,
-      phoneNumber,
-      latitude,
-      longitude,
+      ...req.body,
       user: req.user._id,
     });
 

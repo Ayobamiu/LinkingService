@@ -20,10 +20,12 @@ router.post(
   upload.fields([{ name: "logo" }, { name: "banner" }]),
   ProductController.addStore
 );
+router.post("/load-sandBox", ProductController.loadSandBox);
 router.post("/add-transaction", auth, ProductController.addTransaction);
 router.get("/store/products/:storeId", ProductController.getStoreProducts);
 router.get("/store/:storeId", ProductController.getStoreAndProducts);
 router.get("/store-by-slug/:slug", ProductController.getStore);
+router.get("/store-by-id/:storeId", ProductController.getStoreById);
 router.get("/stores", auth, ProductController.getStores);
 router.patch(
   "/store/:storeId",
@@ -47,6 +49,7 @@ router.get("/orders", auth, ProductController.getMyOrders);
 router.get("/orders/:orderId", ProductController.getSingleOrder);
 
 router.patch("/:orderId/update-order", ProductController.updateOrder);
+router.patch("/:orderId/call-for-dispatch", ProductController.callForDispatch);
 router.get("/carts", auth, ProductController.loadMyCarts);
 router.post("/:productId/add-cart", auth, ProductController.addProductToCart);
 router.post(

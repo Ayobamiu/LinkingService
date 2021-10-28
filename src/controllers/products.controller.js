@@ -10,6 +10,15 @@ const { default: slugify } = require("slugify");
 const Transaction = require("../models/transaction.model");
 const { createInvoice } = require("../documents/createInvoice");
 const { sendPushNotification } = require("../utilities/pushNotifications");
+const { default: axios } = require("axios");
+const sgMail = require("@sendgrid/mail");
+const fromEmail = "contact@monaly.co";
+const fromname = "Monaly";
+const linkToMonaly = "https://www.monaly.co";
+const linktoDashboard = `${linkToMonaly}/dashboard`;
+const linktoPricing = `${linkToMonaly}/pricing`;
+const linktoInvite = `${linkToMonaly}/invite`;
+const linktoOrders = `${linkToMonaly}/orders`;
 
 class ProductController {
   static async addStore(req, res) {
@@ -53,6 +62,17 @@ class ProductController {
       const store = await EcommerceStore.findOne({
         slug: req.params.slug,
       }).populate({ path: "products", model: Product });
+      return res.status(200).send(store);
+    } catch (error) {
+      return res.status(400).send();
+    }
+  }
+  static async getStoreById(req, res) {
+    try {
+      const store = await EcommerceStore.findById(req.params.storeId).populate({
+        path: "products",
+        model: Product,
+      });
       return res.status(200).send(store);
     } catch (error) {
       return res.status(400).send();
@@ -144,6 +164,36 @@ class ProductController {
     }
   }
 
+  static async callForDispatch(req, res) {
+    try {
+      console.log("req.body.orderId", req.params.orderId);
+      const order = await Order.findById(req.params.orderId);
+      console.log("order", order);
+      const shipment = await axios
+        .post(
+          "https://sandbox.staging.sendbox.co/shipping/shipments",
+          { ...order.shippingData },
+          {
+            headers: {
+              Authorization: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiI2MTZkN2YwYTljMjY3ZjAwNDU1MmZmYWYiLCJhaWQiOiI2MTZkN2ZjZTljMjY3ZjAwNDU1MmZmYjQiLCJ0d29fZmEiOmZhbHNlLCJpc3MiOiJzZW5kYm94LmF1dGgiLCJleHAiOjE2Mzk2NjM3MjZ9.YLbKMT2zYp29bwxro3QMAbeaOzZJa9NcVJpdXgGxiNI".trim(),
+            },
+          }
+        )
+        .catch((error) => console.log("error", error));
+      console.log("shipment", shipment);
+
+      await order.update(
+        {
+          shipping: shipment.data,
+          tracking_code: shipment.data.tracking_code,
+        },
+        { new: true }
+      );
+      return res.status(201).send(order);
+    } catch (error) {
+      return res.status(400).send();
+    }
+  }
   static async orderProducts(req, res) {
     try {
       const products = [];
@@ -211,6 +261,7 @@ class ProductController {
         amount: req.body.total,
         shippingFee: req.body.shippingFee,
         deliveryMethod: req.body.deliveryMethod,
+        shippingData: req.body.shippingData,
         deliveryMerchant: req.body.deliveryMerchant,
         store: storeId,
       };
@@ -218,6 +269,38 @@ class ProductController {
         orderData.dileveryAddress = req.body.dileveryAddress;
       }
       const order = await Order.create(orderData);
+      //Create shipment with sandbox
+
+      // const shipment = await axios.post(
+      //   "https://sandbox.staging.sendbox.co/shipping/shipments",
+      //   { ...req.body.shippingData },
+      //   {
+      //     headers: {
+      //       Authorization: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiI2MTZkN2YwYTljMjY3ZjAwNDU1MmZmYWYiLCJhaWQiOiI2MTZkN2ZjZTljMjY3ZjAwNDU1MmZmYjQiLCJ0d29fZmEiOmZhbHNlLCJpc3MiOiJzZW5kYm94LmF1dGgiLCJleHAiOjE2Mzk2NjM3MjZ9.YLbKMT2zYp29bwxro3QMAbeaOzZJa9NcVJpdXgGxiNI".trim(),
+      //     },
+      //   }
+      // );
+
+      // await order.update({
+      //   shipping: shipment.data,
+      //   tracking_code: shipment.data.tracking_code,
+      // });
+
+      //Update order status to 'pending'
+      //drafted
+      //This means the shipment hasn't been paid for. User might need to fund their account to complete their shipment request. it comes back with code:"drafted" as the status code in the response.
+      //This means the shipment request was successful and is waiting to be picked up.  comes back with code:"pending" as the status code in the response.
+      //This means shipment has been picked up. comes back with code:"pickup_started" as the status code in the response.
+      //This means the pick up process has been completed. comes back with code:"pickup_completed" in the status code response.
+      //This means the delivery process has started. comes back with code:in_delivery in the status code response.
+      //This means delivery is in transit and it's updated in real-time. Comes back with code:"in_transit" as the status code in the response.
+      //This means the entire process has been completed and the shipment has been delivered. Comes back with code:"deliverd" as the status code in the response.
+      // if status_code==='pending' or status_code === 'drafted', Update order status to 'started'
+      // if status_code === 'pickup_started', Update order status to 'started', inform seller that transit is here
+      // if status_code === 'pickup_completed', Update order status to 'sent', inform buyer that package is in transit
+      // if status_code === 'in_transit', Update order status to 'sent', inform buyer that package is in transit
+      // if status_code === 'deliverd', Update order status to 'completed', inform seller that package is delivered and ask buyer for feedback
+
       invoice.invoice_nr = order._id;
       //add invoice to order
       const fileTosend = await createInvoice(invoice, order._id, store);
@@ -235,9 +318,9 @@ class ProductController {
       });
       const buyer = await User.findById(req.user._id);
       const seller = await User.findById(sellerId);
-      sendRecieptBuyer(buyer.email, data, buyer.firstName, fileTosend);
+      // sendRecieptBuyer(buyer.email, data, buyer.firstName, fileTosend);
       await order.update({ invoice: fileTosend });
-      sendRecieptSeller(seller.email, data, seller.firstName);
+      // sendRecieptSeller(seller.email, data, seller.firstName);
       const populatedOrder = await Order.findById(order._id).populate(
         "products.product"
       );
@@ -262,6 +345,118 @@ class ProductController {
       return res.status(201).send(order);
     } catch (error) {
       return res.status(400).send();
+    }
+  }
+
+  static async updateOrderFromSandbox(req, res) {
+    try {
+      const shipment = req.body;
+      const order = await Order.findOne({
+        tracking_code: shipment.tracking_code,
+      }).populate("products.product");
+
+      const seller = await User.findById(order.seller);
+      const buyer = await User.findById(order.buyer);
+      // if status_code==='pending' or status_code === 'drafted', Update order status to 'started'
+      if (shipment.status_code === "pending" || status_code === "drafted") {
+        await order.update({ status: "started" });
+      }
+      // if status_code === 'pickup_started', Update order status to 'started', inform seller that transit is here
+      if (shipment.status_code === "pickup_started") {
+        await order.update({ status: "started" });
+        //inform seller that transit is here
+        await sendPushNotification(
+          "Transit is here for Pick Up",
+          `Dispacht is here to pick up order of ${
+            order.products.length
+          } product${products.length > 1 ? "s" : ""}`,
+          seller.expoPushToken,
+          {
+            order,
+            type: "order",
+          }
+        );
+      }
+      // if status_code === 'pickup_completed', Update order status to 'sent', inform buyer that package is in transit
+      if (shipment.status_code === "pickup_completed") {
+        await order.update({ status: "sent" });
+      }
+      // if status_code === 'in_transit', Update order status to 'sent', inform buyer that package is in transit
+      if (shipment.status_code === "in_transit") {
+        await order.update({ status: "sent" });
+        //inform buyer that package is in transit
+        await sendPushNotification(
+          "Your Package is now in Transit",
+          `Your order of ${order.products.length} product${
+            products.length > 1 ? "s" : ""
+          } is being shipped.`,
+          buyer.expoPushToken,
+          {
+            order,
+            type: "order",
+          }
+        );
+        sgMail
+          .send({
+            to: buyer.email,
+            from: {
+              email: fromEmail,
+              name: fromname,
+            },
+
+            subject: "Your Package is in Transit",
+            text: `Your order of ${order.products.length} product${
+              products.length > 1 ? "s" : ""
+            } is being shipped. \n Track your order here ${linktoOrders}/${
+              order._id
+            }`,
+          })
+          .then((response) => {
+            console.log("Email sent");
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+      // if status_code === 'deliverd', Update order status to 'completed', inform seller that package is delivered and ask buyer for feedback
+      if (shipment.status_code === "delivered") {
+        await order.update({ status: "completed" });
+        //inform seller that package is delivered and ask buyer for feedback
+        await sendPushNotification(
+          "Package delivered Successfully.",
+          `Your order of ${order.products.length} product${
+            products.length > 1 ? "s" : ""
+          } has been delivered.`,
+          seller.expoPushToken,
+          {
+            order,
+            type: "order",
+          }
+        );
+        sgMail
+          .send({
+            to: buyer.email,
+            from: {
+              email: fromEmail,
+              name: fromname,
+            },
+
+            subject: "Package Delivered.",
+            text: `Thank you for trusting us. Your Package has being delivered. \n Kindly tell us about your Monaly experience, It'll help us get better.`,
+          })
+          .then((response) => {
+            console.log("Email sent");
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+
+      await order.save();
+
+      return res.status(200).send(order);
+    } catch (error) {
+      return res.status(400).send(error);
     }
   }
 
@@ -543,12 +738,13 @@ class ProductController {
 
   static async getStoreProducts(req, res) {
     try {
-      const store = await EcommerceStore.findById(req.params.storeId).populate({
-        path: "products",
-        model: Product,
-        options: { sort: { createdAt: -1 } },
-      });
-      return res.status(200).send({ products: store.products });
+      const products = await Product.find({ store: req.params.storeId })
+        .sort({
+          createdAt: -1,
+        })
+        .limit(Number(req.query.perPage))
+        .skip(Number(req.query.page));
+      return res.status(200).send({ products });
     } catch (error) {
       return res.status(400).send();
     }
@@ -558,6 +754,22 @@ class ProductController {
     try {
       const store = await EcommerceStore.findById(req.params.storeId);
       return res.status(200).send({ store });
+    } catch (error) {
+      return res.status(400).send();
+    }
+  }
+  static async loadSandBox(req, res) {
+    try {
+      const result = await axios.post(
+        "https://sandbox.staging.sendbox.co/shipping/shipment_delivery_quote",
+        { ...req.body },
+        {
+          headers: {
+            Authorization: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiI2MTZkN2YwYTljMjY3ZjAwNDU1MmZmYWYiLCJhaWQiOiI2MTZkN2ZjZTljMjY3ZjAwNDU1MmZmYjQiLCJ0d29fZmEiOmZhbHNlLCJpc3MiOiJzZW5kYm94LmF1dGgiLCJleHAiOjE2Mzk2NjM3MjZ9.YLbKMT2zYp29bwxro3QMAbeaOzZJa9NcVJpdXgGxiNI".trim(),
+          },
+        }
+      );
+      return res.status(200).send(result.data);
     } catch (error) {
       return res.status(400).send();
     }
