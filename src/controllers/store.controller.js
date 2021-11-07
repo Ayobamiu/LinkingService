@@ -3,6 +3,8 @@ const Order = require("../models/order.model");
 const Product = require("../models/product.model");
 const EcommerceStore = require("../models/store.model");
 const Transaction = require("../models/transaction.model");
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 class StoreController {
   static async getStoreTransactions(req, res) {
@@ -40,23 +42,23 @@ class StoreController {
       const data = [];
       for (let index = 0; index < stores.length; index++) {
         const store = stores[index];
-        const transaction = await Transaction.aggregate([
-          {
-            $group: {
-              _id: { type: "$type" },
-              total: { $sum: "$amount" },
-            },
-          },
-        ]);
-        const plus = transaction.find((i) => i._id.type === "plus");
-        const minus = transaction.find((i) => i._id.type === "minus");
-        const total = transaction.find((i) => i._id.type === "plus");
+        const transactions = await Transaction.find({ store: store._id });
+        let minus = 0;
+        let plus = 0;
+        for (let index = 0; index < transactions.length; index++) {
+          const transaction = transactions[index];
+          if (transaction.type === "plus") {
+            plus += transaction.amount;
+          }
+          if (transaction.type === "minus") {
+            minus += transaction.amount;
+          }
+        }
         const destOb = store.toObject();
-        destOb.availableBalance = plus.total - minus.total;
+        destOb.availableBalance = plus - minus;
 
         data.push(destOb);
       }
-
       return res.status(200).send(data);
     } catch (error) {
       return res.status(500).send();

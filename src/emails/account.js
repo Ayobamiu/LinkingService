@@ -27,7 +27,7 @@ const sendRecurringDailyEmail = (
         name: fromname,
       },
 
-      subject: "Your Account is getting Attention",
+      subject: "Your Weekly Report is Available",
       text: `${name}, Your Account is getting Attention.`,
       html: generateRecurringEmail(
         name,

@@ -166,9 +166,7 @@ class ProductController {
 
   static async callForDispatch(req, res) {
     try {
-      console.log("req.body.orderId", req.params.orderId);
       const order = await Order.findById(req.params.orderId);
-      console.log("order", order);
       const shipment = await axios
         .post(
           "https://sandbox.staging.sendbox.co/shipping/shipments",
@@ -180,7 +178,6 @@ class ProductController {
           }
         )
         .catch((error) => console.log("error", error));
-      console.log("shipment", shipment);
 
       await order.update(
         {
