@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.get("/orders/:store", StoreController.getMyStoreOrders);
 router.get("/transactions", StoreController.getStoreTransactions);
+router.get("/orders-highlights", StoreController.getOrdersByWeek);
+router.get("/:storeId", StoreController.getStore);
 router.get("/", auth, StoreController.getMyStores);
 
 module.exports = router;
