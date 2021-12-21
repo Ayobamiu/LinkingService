@@ -1,7 +1,11 @@
+/** @format */
+
 const User = require("../models/users.model");
 const bcrypt = require("bcryptjs");
 const { sendPushNotification } = require("../utilities/pushNotifications");
 const BankRecord = require("../models/bankRecord.model");
+const WaitingUser = require("../models/waitingUser.model");
+const { sendWaitingListEmail } = require("../emails/account");
 
 function getRandomString(length) {
   var randomChars =
@@ -103,6 +107,26 @@ class AuthController {
       });
     }
   }
+  static async checkUserNameSuggestions(req, res) {
+    try {
+      const suggestions = [];
+      for (let index = 0; index < req.body.suggestions.length; index++) {
+        const userName = req.body.suggestions[index];
+
+        const userNameExists = await User.findOne({ userName });
+        if (!userNameExists) {
+          suggestions.push(userName);
+        }
+      }
+
+      return res.status(200).send(suggestions);
+    } catch (error) {
+      res.status(500).send({
+        error: "500 Internal server error",
+        message: "Error getting suggestions",
+      });
+    }
+  }
 
   static async addExpoPushToken(req, res) {
     try {
@@ -168,6 +192,18 @@ class AuthController {
       });
 
       return res.send(records);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  }
+  static async addUserToWaitingList(req, res) {
+    try {
+      const user = await WaitingUser.create({
+        email: req.body.email,
+      });
+      sendWaitingListEmail(req.body.email);
+
+      return res.send(user);
     } catch (error) {
       return res.status(500).send(error);
     }

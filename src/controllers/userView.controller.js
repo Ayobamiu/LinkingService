@@ -1,3 +1,5 @@
+/** @format */
+
 const jwt = require("jsonwebtoken");
 const UserView = require("../models/artistViews.model");
 const DigitalPlatform = require("../models/digitalPlatforms.model");

@@ -1,3 +1,5 @@
+/** @format */
+
 var passport = require("passport");
 var GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 const express = require("express");
@@ -263,7 +265,9 @@ router.get("/me/views", auth, async (req, res) => {
   worldLowRes.layers.forEach((country) => {
     let item = { ...country };
     const countryMatches = visitors.filter(
-      (visitor) => visitor.country.toLowerCase() === country.name.toLowerCase()
+      (visitor) =>
+        visitor.country &&
+        visitor.country.toLowerCase() === country.name.toLowerCase()
     );
 
     country.count = countryMatches.length;

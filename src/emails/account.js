@@ -1,3 +1,5 @@
+/** @format */
+
 const sgMail = require("@sendgrid/mail");
 const {
   generateSignUpEmail,
@@ -11,6 +13,38 @@ sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 const fromEmail = "contact@monaly.co";
 const fromname = "Monaly";
 
+const sendWaitingListEmail = (email) => {
+  sgMail
+    .send({
+      to: email,
+      from: {
+        email: fromEmail,
+        name: fromname,
+      },
+
+      subject: "Monaly is launching soon 🚀 ",
+      html: `<div>
+              <p>
+                🤗 We are happy to have you.
+              </p>
+              
+              <p>
+                Thank you for joining our waiting list.
+              </p>
+              
+              <p>
+                We will be sure to tell 🤙 you first once we launch.
+              </p>
+      </div>
+      `,
+    })
+    .then((response) => {
+      console.log("Email sent");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
 const sendRecurringDailyEmail = (
   email,
   name,
@@ -151,4 +185,5 @@ module.exports = {
   sendRecurringDailyEmail,
   sendRecieptBuyer,
   sendRecieptSeller,
+  sendWaitingListEmail,
 };
