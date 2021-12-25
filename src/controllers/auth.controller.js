@@ -55,6 +55,33 @@ class AuthController {
       });
     }
   }
+  static async login(req, res) {
+    try {
+      const user = await User.findOne({ email: req.body.email });
+      if (!user) {
+        return res.status(404).send({
+          error: "404 not found",
+          message: "Email is not registered",
+        });
+      }
+
+      //compare if the password matches the password for the user
+      const isMatch = await bcrypt.compare(req.body.password, user.password);
+      if (!isMatch) {
+        return res.status(404).send({
+          error: "404 Credentials not a match",
+          message: "Credential is not a match",
+        });
+      }
+
+      const token = await user.generateAuthTokenLite();
+      res.send(token);
+    } catch (error) {
+      res
+        .status(400)
+        .send({ error: "400 Bad request", message: "Unable to login" });
+    }
+  }
   static async loginLite(req, res) {
     try {
       const user = await User.findOne({ email: req.body.email });

@@ -189,7 +189,20 @@ userSchema.methods.toJSON = function () {
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
   const token = jwt.sign(
-    { _id: user._id.toString(), user },
+    {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      userName: user.userName,
+      profileTitle: user.profileTitle,
+      email: user.email,
+      bio: user.bio,
+      coverPhoto: user.coverPhoto,
+      profilePhoto: user.profilePhoto,
+      availableBalance: user.availableBalance,
+      ledgerBalance: user.ledgerBalance,
+      stores: storeIds,
+    },
     process.env.JWT_SECRET
   );
   user.tokens = user.tokens.concat({ token });
@@ -228,6 +241,7 @@ userSchema.statics.findByCredentials = async (req, res, email, password) => {
   //check if user exists
   const user = await User.findOne({ email }).populate("addresses stores");
   if (!user) {
+    console.log("Email is not registered");
     return res.status(404).send({
       error: "404 not found",
       message: "Email is not registered",
@@ -237,8 +251,9 @@ userSchema.statics.findByCredentials = async (req, res, email, password) => {
   //compare if the password matches the password for the user
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    return res.status(205).send({
-      error: "205 Credentials not a match",
+    console.log("Credential is not a match");
+    return res.status(404).send({
+      error: "404 Credentials not a match",
       message: "Credential is not a match",
     });
   }

@@ -43,6 +43,7 @@ const Themes = require("../models/themes.model");
 const UserView = require("../models/artistViews.model");
 const ShippingAddress = require("../models/shippingAddress.model");
 const Transaction = require("../models/transaction.model");
+const AuthController = require("../controllers/auth.controller");
 
 const router = express.Router();
 
@@ -121,29 +122,7 @@ router.post("/sign-up", async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
-  try {
-    const user = await User.findByCredentials(
-      req,
-      res,
-      req.body.email,
-      req.body.password
-    );
-    if (!user) {
-      return res.status(404).send({
-        error: "User with credential not found",
-        message: "Credential is not a match",
-      });
-    }
-    const token = await user.generateAuthToken();
-
-    res.send({ user, token });
-  } catch (error) {
-    res
-      .status(400)
-      .send({ error: "400 Bad request", message: "Unable to login" });
-  }
-});
+router.post("/login", AuthController.login);
 
 //upload user images
 router.post(
