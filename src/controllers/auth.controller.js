@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const { sendPushNotification } = require("../utilities/pushNotifications");
 const BankRecord = require("../models/bankRecord.model");
 const WaitingUser = require("../models/waitingUser.model");
-const { sendWaitingListEmail } = require("../emails/account");
+const { sendWaitingListEmail, sendWelcomeEmail } = require("../emails/account");
 
 function getRandomString(length) {
   var randomChars =

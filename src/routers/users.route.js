@@ -87,40 +87,7 @@ router.post("/check-username", async (req, res) => {
   }
 });
 
-router.post("/sign-up", async (req, res) => {
-  try {
-    const userNameExists = await User.findOne({ userName: req.body.userName });
-    if (userNameExists) {
-      return res.status(400).send({
-        status: "400 Bad request",
-        error: "userName is taken",
-      });
-    }
-
-    const emailExists = await User.findOne({ email: req.body.email });
-    if (emailExists) {
-      return res.status(400).send({
-        status: "400 Bad request",
-        error: "Email is taken",
-      });
-    }
-
-    const user = new User({
-      ...req.body,
-      userName: req.body.userName.replace(/\s/g, ""),
-    });
-    const token = await user.generateAuthToken();
-    await user.populate("addresses");
-    await user.save();
-    sendWelcomeEmail(user.email, user.firstName, user.userName, false);
-    res.status(201).send({ status: "success", user, token });
-  } catch (error) {
-    res.status(500).send({
-      status: "500 Internal server error",
-      error: "Error saving User",
-    });
-  }
-});
+router.post("/sign-up", AuthController.signUpLite);
 
 router.post("/login", AuthController.login);
 
