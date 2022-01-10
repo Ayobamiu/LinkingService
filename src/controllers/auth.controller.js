@@ -6,6 +6,7 @@ const { sendPushNotification } = require("../utilities/pushNotifications");
 const BankRecord = require("../models/bankRecord.model");
 const WaitingUser = require("../models/waitingUser.model");
 const { sendWaitingListEmail, sendWelcomeEmail } = require("../emails/account");
+const reservedWords = require("../json/reservedWords.json");
 
 function getRandomString(length) {
   var randomChars =
@@ -109,7 +110,6 @@ class AuthController {
         .send({ error: "400 Bad request", message: "Unable to login" });
     }
   }
-
   static async checkUserName(req, res) {
     try {
       const userNameExists = await User.findOne({
@@ -120,6 +120,12 @@ class AuthController {
         return res.status(400).send({
           error: "400 Bad request",
           message: "Username taken.",
+        });
+      }
+      if (reservedWords.includes(req.body.userName)) {
+        return res.status(400).send({
+          status: "400 Bad request",
+          error: "This is a reserved word.",
         });
       }
       if (!userNameExists) {
@@ -154,7 +160,6 @@ class AuthController {
       });
     }
   }
-
   static async addExpoPushToken(req, res) {
     try {
       const user = await User.findByIdAndUpdate(
@@ -185,7 +190,6 @@ class AuthController {
       });
     }
   }
-
   static async sendNotification(req, res) {
     try {
       const user = await User.findById(req.user._id);
@@ -198,7 +202,6 @@ class AuthController {
       res.send("success");
     } catch (error) {}
   }
-
   static async addBankRecord(req, res) {
     try {
       const record = await BankRecord.create({
@@ -211,7 +214,6 @@ class AuthController {
       return res.status(500).send(error);
     }
   }
-
   static async getBankRecords(req, res) {
     try {
       const records = await BankRecord.find({

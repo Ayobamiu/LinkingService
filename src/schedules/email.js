@@ -1,3 +1,5 @@
+/** @format */
+
 const schedule = require("node-schedule");
 const UserView = require("../models/artistViews.model");
 const CustomLinkClick = require("../models/customLinkClick.model");
@@ -100,7 +102,7 @@ const reachOutToInactives = async () => {
             name: fromname,
           },
 
-          subject: "About your Monaly Link.",
+          subject: `${user.firstName}, About your Monaly Link.`,
 
           html: `<!DOCTYPE html>
     <html lang="en">

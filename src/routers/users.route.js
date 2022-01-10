@@ -9,6 +9,7 @@ const auth = require("../middlewares/auth.middleware");
 const User = require("../models/users.model");
 const upload = require("../bucket-config/bucket");
 const worldLowRes = require("../config/world.json");
+const reservedWords = require("../json/reservedWords.json");
 
 passport.use(
   new GoogleStrategy(
@@ -73,6 +74,12 @@ router.post("/check-username", async (req, res) => {
         error: "Username taken.",
       });
     }
+    if (reservedWords.includes(req.body.userName)) {
+      return res.status(400).send({
+        status: "400 Bad request",
+        error: "This is a reserved word.",
+      });
+    }
     if (!userNameExists) {
       return res.status(200).send({
         status: "200 succesfull",
@@ -109,7 +116,10 @@ router.post(
     }
     try {
       await req.user.save();
-      res.send(req.user);
+      const user = await User.findOne({ _id: req.user._id }).populate({
+        path: "theme addresses stores",
+      });
+      res.send(user);
     } catch (error) {
       res.status(400).send();
     }
@@ -129,7 +139,10 @@ router.patch(
     req.user.coverPhoto = req.files.coverPhoto[0].location;
     try {
       await req.user.save();
-      res.send(req.user);
+      const user = await User.findOne({ _id: req.user._id }).populate({
+        path: "theme addresses stores",
+      });
+      res.send(user);
     } catch (error) {
       res.status(400).send();
     }
@@ -141,7 +154,10 @@ router.delete("/me/profilePhoto", auth, async (req, res) => {
   req.user.profilePhoto = undefined;
   try {
     await req.user.save();
-    res.send(req.user);
+    const user = await User.findOne({ _id: req.user._id }).populate({
+      path: "theme addresses stores",
+    });
+    res.send(user);
   } catch (error) {
     res.status(400).send();
   }
@@ -152,7 +168,10 @@ router.delete("/me/coverPhoto", auth, async (req, res) => {
   req.user.coverPhoto = undefined;
   try {
     await req.user.save();
-    res.send(req.user);
+    const user = await User.findOne({ _id: req.user._id }).populate({
+      path: "theme addresses stores",
+    });
+    res.send(user);
   } catch (error) {
     res.status(400).send();
   }
@@ -160,6 +179,27 @@ router.delete("/me/coverPhoto", auth, async (req, res) => {
 
 router.get("/users", async (req, res) => {
   const users = await User.find({})
+    .populate("linksCount productsCount storesCount")
+    .select(
+      "firstName lastName userName profilePhoto email linksCount productsCount storesCount"
+    );
+  try {
+    res.send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+router.get("/users-with-username", async (req, res) => {
+  const wildcard = ".*" + req.body.searchQuery + ".*";
+
+  const users = await User.find({
+    $or: [
+      { firstName: { $regex: wildcard, $options: "i" } },
+      { lastName: { $regex: wildcard, $options: "i" } },
+      { email: { $regex: wildcard, $options: "i" } },
+      { userName: { $regex: wildcard, $options: "i" } },
+    ],
+  })
     .populate("linksCount productsCount storesCount")
     .select(
       "firstName lastName userName profilePhoto email linksCount productsCount storesCount"
@@ -271,7 +311,7 @@ router.patch("/me", auth, async (req, res) => {
     updates.forEach((update) => (req.user[update] = req.body[update]));
     await req.user.save();
     const user = await User.findOne({ _id: req.user._id }).populate({
-      path: "theme",
+      path: "theme addresses stores",
     });
 
     res.send(user);

@@ -57,23 +57,23 @@ const sendLaunchEmail = (email) => {
       subject: "Monaly launch 🚀",
       html: `<div>
       <p><span data-preserver-spaces="true">Welcome to monaly</span></p>
-      <p><span data-preserver-spaces="true">We launch 🚀 today and we are very excited to start the journey with you.</span></p>
-      <p>&nbsp;</p>
-      <p><span data-preserver-spaces="true">Monaly lets you host links to a variety of media content on your personal webpage with easy-to-use customization options.</span></p>
-      <p>&nbsp;</p>
-      <p><span data-preserver-spaces="true">Monaly is for everyone and anyone that wants to showcase their works. From companies, writers, entrepreneurs, artists, to students.</span></p>
-      <p><span data-preserver-spaces="true">How do I set up my Monaly?</span></p>
-      <p><span data-preserver-spaces="true">1. Sign up with Monaly&nbsp;</span><a class="editor-rtfLink" href="https://www.monaly.com" target="_blank" rel="noopener"><span data-preserver-spaces="true">here&nbsp;</span></a></p>
-      <p><span data-preserver-spaces="true">2. Go to dashboard</span></p>
-      <p><span data-preserver-spaces="true">3. Click on the &ldquo;Add new link&rdquo; button</span></p>
-      <p><span data-preserver-spaces="true">4. Add a link title e.g My new store</span></p>
-      <p><span data-preserver-spaces="true">5. Add a link URL e.g https://www.mynewstore.com</span></p>
-      <p><span data-preserver-spaces="true">6. Add an image to your link (optional)</span></p>
-      <p><span data-preserver-spaces="true">7. Click on Add.</span></p>
-      <p><span data-preserver-spaces="true">I have added a link, what&rsquo;s next?</span></p>
-      <p><span data-preserver-spaces="true">To add a link is the first and hardest part of using Monaly, now let the whole world 🌎 know.</span></p>
-      <p><span data-preserver-spaces="true">Share your link with your audience on all platforms.&nbsp;</span></p>
-      <p><span data-preserver-spaces="true">Click on the &ldquo;Copy link&rdquo; button to share your Monaly link with friends.</span></p>
+<p><span data-preserver-spaces="true">We launch 🚀 today and we are very excited to start the journey with you.</span></p>
+<p><span data-preserver-spaces="true">Monaly lets you host links to a variety of media content on your personal webpage with easy-to-use customization options.</span></p>
+<p><span data-preserver-spaces="true">Monaly is for everyone and anyone that wants to showcase their works. From companies, writers, entrepreneurs, artists, to students.</span></p>
+<p><span data-preserver-spaces="true">How do I set up my Monaly?</span></p>
+<p><span data-preserver-spaces="true">1. Sign up with Monaly&nbsp;</span><a class="editor-rtfLink" href="https://www.monaly.co" target="_blank" rel="noopener"><span data-preserver-spaces="true">here&nbsp;</span></a></p>
+<p><span data-preserver-spaces="true">2. Go to dashboard</span></p>
+<p><span data-preserver-spaces="true">3. Click on the &ldquo;Add new link&rdquo; button</span></p>
+<p><span data-preserver-spaces="true">4. Add a link title e.g My new store</span></p>
+<p><span data-preserver-spaces="true">5. Add a link URL e.g https://www.mynewstore.com</span></p>
+<p><span data-preserver-spaces="true">6. Add an image to your link (optional)</span></p>
+<p><span data-preserver-spaces="true">7. Click on Add.</span></p>
+<p><span data-preserver-spaces="true">I have added a link, what&rsquo;s next?</span></p>
+<p><span data-preserver-spaces="true">To add a link is the first and hardest part of using Monaly, now let the whole world 🌎 know.</span></p>
+<p><span data-preserver-spaces="true">Share your link with your audience on all platforms.&nbsp;</span></p>
+<p><span data-preserver-spaces="true">Click on the &ldquo;Copy link&rdquo; button to share your Monaly link with friends.</span></p>
+<p>&nbsp;</p>
+<p><span data-preserver-spaces="true">Follow us on <a href="https://web.facebook.com/Monaly-101778559047541">Facebook</a>, <a href="https://instagram.com/usemonaly?utm_medium=copy_link">Instagram</a>, <a href="https://twitter.com/usemonaly?s=11">Twitter</a> and <a href="https://vm.tiktok.com/ZM83mNkHU/">TikTok</a>&nbsp;</span></p>
       </div>
       `,
     })
