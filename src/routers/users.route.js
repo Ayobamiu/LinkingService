@@ -30,7 +30,6 @@ passport.use(
           return done(err, user);
         }
       );
-      console.log("profile", profile);
     }
   )
 );
@@ -59,7 +58,6 @@ router.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
-    console.log(req);
     res.redirect("/");
   }
 );

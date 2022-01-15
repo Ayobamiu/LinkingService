@@ -1,8 +1,11 @@
+/** @format */
+
 const jwt = require("jsonwebtoken");
 const UserView = require("../models/artistViews.model");
 const CustomLink = require("../models/customLink.model");
 const CustomLinkClick = require("../models/customLinkClick.model");
 const User = require("../models/users.model");
+const worldLowRes = require("../config/world.json");
 
 /**
  *Contains CustomLink Controller
@@ -12,14 +15,6 @@ const User = require("../models/users.model");
  * @class CustomLinkController
  */
 class CustomLinkController {
-  /**
-   * Add a CustomLink
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof CustomLinkController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async addCustomLink(req, res) {
     try {
       const data = {
@@ -37,14 +32,6 @@ class CustomLinkController {
     }
   }
 
-  /**
-   * Update a CustomLink
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof CustomLinkController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async updateCustomLink(req, res) {
     let update = {};
     if (req.body.link) {
@@ -71,14 +58,6 @@ class CustomLinkController {
     }
   }
 
-  /**
-   * Delete a CustomLink
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof CustomLinkController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async deleteCustomLink(req, res) {
     try {
       const customLink = await CustomLink.findByIdAndDelete(
@@ -93,14 +72,6 @@ class CustomLinkController {
     }
   }
 
-  /**
-   * View a CustomLink
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof CustomLinkController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async viewCustomLink(req, res) {
     const customLinkViewData = {
       customLink: req.params.customLinkId,
@@ -133,14 +104,6 @@ class CustomLinkController {
     }
   }
 
-  /**
-   * Get user a CustomLinks
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof CustomLinkController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async getMyCustomLinks(req, res) {
     try {
       const customLinks = await CustomLink.find({ owner: req.user._id }).sort({
@@ -154,14 +117,6 @@ class CustomLinkController {
     }
   }
 
-  /**
-   * Get CustomLinks count
-   * @param {Request} req - Response object.
-   * @param {Response} res - The payload.
-   * @memberof CustomLinkController
-   * @returns {JSON} - A JSON success response.
-   *
-   */
   static async getCustomLinksCount(req, res) {
     try {
       const customLinksCount = await CustomLink.countDocuments({});
@@ -171,6 +126,60 @@ class CustomLinkController {
     } catch (error) {
       return res.status(500).json({
         message: "Could not count links. Check connection!",
+      });
+    }
+  }
+  static async getCustomLinkAnalytics(req, res) {
+    try {
+      const filter = { user: req.user._id };
+      if (req.body.startDate && req.body.endDate) {
+        filter.createdAt = {
+          $gte: new Date(req.body.startDate),
+          $lte: new Date(req.body.endDate),
+        };
+      }
+
+      const customLinks = await CustomLink.find({ owner: req.user._id }).select(
+        "clicksCount title link clickCount"
+      );
+
+      let countries = await UserView.aggregate([
+        { $match: filter },
+        {
+          $group: {
+            _id: "$country",
+            count: { $sum: 1 },
+          },
+        },
+      ]);
+      let cities = await UserView.aggregate([
+        { $match: filter },
+        {
+          $group: {
+            _id: "$city",
+            count: { $sum: 1 },
+          },
+        },
+      ]);
+      let deviceType = await UserView.aggregate([
+        { $match: filter },
+        {
+          $group: {
+            _id: "$deviceType",
+            count: { $sum: 1 },
+          },
+        },
+      ]);
+
+      res.send({
+        deviceType,
+        customLinks,
+        countries,
+        cities,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Could not get link analytics. Check connection!",
       });
     }
   }

@@ -7,6 +7,7 @@ const User = require("../models/users.model");
 const moment = require("moment");
 const { sendRecurringDailyEmail } = require("../emails/account");
 const sgMail = require("@sendgrid/mail");
+const capitalizeFirstLetter = require("../utilities/capitalizeFirstLetter");
 
 const fromEmail = "contact@monaly.co";
 const fromname = "Monaly";
@@ -102,7 +103,9 @@ const reachOutToInactives = async () => {
             name: fromname,
           },
 
-          subject: `${user.firstName}, About your Monaly Link.`,
+          subject: `${capitalizeFirstLetter(
+            capitalizeFirstLetter(user.firstName)
+          )}, let's get you started.`,
 
           html: `<!DOCTYPE html>
     <html lang="en">
@@ -112,12 +115,14 @@ const reachOutToInactives = async () => {
         <title>Email</title>
       </head>
       <body>
-        <p>Hey ${user.firstName},</p>
+        <p>Hey ${capitalizeFirstLetter(user.firstName)},</p>
     
         <p>
           Just wanted to check in because it seems like you're currently not using
           your Monaly link:
-          <a href="https://www.monaly.co/${user.userName}">monaly.co/${user.userName}</a>.
+          <a href="https://www.monaly.co/${user.userName}">monaly.co/${
+            user.userName
+          }</a>.
         </p>
     
         <p>Would you mind responding to this email and letting me know why?</p>
@@ -149,7 +154,6 @@ const reachOutToInactives = async () => {
           console.error(error);
         });
     }
-    // console.log(user.userName, clickCount, viewCount);
   }
 };
 // reachOutToInactives();

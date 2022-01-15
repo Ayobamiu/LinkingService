@@ -1,3 +1,5 @@
+/** @format */
+
 const mongoose = require("mongoose");
 
 const SocialMediaSchema = mongoose.Schema(
@@ -12,7 +14,7 @@ const SocialMediaSchema = mongoose.Schema(
     },
     link: {
       type: String,
-    }, 
+    },
     clickCount: {
       type: Number,
       default: 0,

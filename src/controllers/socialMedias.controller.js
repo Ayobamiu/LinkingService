@@ -1,3 +1,5 @@
+/** @format */
+
 const jwt = require("jsonwebtoken");
 const User = require("../models/users.model");
 const SocialMedia = require("../models/socialMedia.model");
@@ -38,8 +40,10 @@ class SocialMediaPlatformController {
         mediaPlatformSample: req.body.mediaPlatformSample,
         link: req.body.link,
       });
-      await socialMediaPlatform.populate("mediaPlatformSample");
-      return res.status(201).send(socialMediaPlatform);
+      const populated = await SocialMedia.findById(
+        socialMediaPlatform._id
+      ).populate("mediaPlatformSample");
+      return res.status(201).send(populated);
     } catch (error) {
       return res.status(400).send();
     }

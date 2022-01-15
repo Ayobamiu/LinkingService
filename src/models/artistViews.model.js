@@ -1,3 +1,5 @@
+/** @format */
+
 const mongoose = require("mongoose");
 
 const UserViewSchema = mongoose.Schema(
@@ -20,6 +22,16 @@ const UserViewSchema = mongoose.Schema(
     },
     country: {
       type: String,
+    },
+    longitude: {
+      type: String,
+    },
+    latitude: {
+      type: String,
+    },
+    deviceType: {
+      type: String,
+      enum: ["mobile", "desktop"],
     },
   },
   { timestamps: true }

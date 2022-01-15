@@ -77,16 +77,8 @@ class UserViewController {
         userName: req.params.userName,
       });
 
-      let viewData = { user: user._id };
-      if (req.body.visitorLocation) {
-        viewData.visitorLocation = req.body.visitorLocation;
-      }
-      if (req.body.city) {
-        viewData.city = req.body.city;
-      }
-      if (req.body.country) {
-        viewData.country = req.body.country;
-      }
+      let viewData = { user: user._id, ...req.body };
+
       const viewResult = await UserView.create(viewData);
       return res.status(201).send(viewResult);
     } catch (error) {

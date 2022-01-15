@@ -1,3 +1,5 @@
+/** @format */
+
 const express = require("express");
 const auth = require("../middlewares/auth.middleware");
 const CustomLinkController = require("../controllers/customLink.controller");
@@ -12,6 +14,7 @@ router.post(
   CustomLinkController.addCustomLink
 );
 router.get("/counts", CustomLinkController.getCustomLinksCount);
+router.post("/analytics", auth, CustomLinkController.getCustomLinkAnalytics);
 router.get("/:customLinkId", CustomLinkController.viewCustomLink);
 router.patch(
   "/:customLinkId",

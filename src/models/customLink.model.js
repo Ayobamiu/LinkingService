@@ -1,3 +1,5 @@
+/** @format */
+
 const mongoose = require("mongoose");
 
 const CustomLinkSchema = mongoose.Schema(
@@ -27,6 +29,13 @@ const CustomLinkSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+// CustomLinkSchema.virtual("clicksCount", {
+//   ref: "CustomLinkClick",
+//   localField: "_id",
+//   foreignField: "customLink",
+//   count: true, // And only get the number of docs
+// });
+
 const CustomLink = mongoose.model("CustomLink", CustomLinkSchema);
 
 module.exports = CustomLink;

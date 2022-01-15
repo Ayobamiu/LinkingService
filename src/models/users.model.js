@@ -87,6 +87,7 @@ const userSchema = mongoose.Schema(
     theme: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Themes",
+      default: "6085c02da2d19336940c8509",
     },
     viewCount: {
       type: Number,
@@ -241,7 +242,6 @@ userSchema.statics.findByCredentials = async (req, res, email, password) => {
   //check if user exists
   const user = await User.findOne({ email }).populate("addresses stores");
   if (!user) {
-    console.log("Email is not registered");
     return res.status(404).send({
       error: "404 not found",
       message: "Email is not registered",
@@ -251,7 +251,6 @@ userSchema.statics.findByCredentials = async (req, res, email, password) => {
   //compare if the password matches the password for the user
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    console.log("Credential is not a match");
     return res.status(404).send({
       error: "404 Credentials not a match",
       message: "Credential is not a match",
