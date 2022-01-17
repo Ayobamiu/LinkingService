@@ -19,8 +19,7 @@ class CustomLinkController {
     try {
       const data = {
         owner: req.user._id,
-        title: req.body.title,
-        link: req.body.link,
+        ...req.body,
       };
       if (req.file) {
         data.image = req.file.location;
@@ -33,19 +32,12 @@ class CustomLinkController {
   }
 
   static async updateCustomLink(req, res) {
-    let update = {};
-    if (req.body.link) {
-      update.link = req.body.link;
-    }
-    if (req.body.title) {
-      update.title = req.body.title;
-    }
+    let update = { ...req.body };
+
     if (req.file) {
       update.image = req.file.location;
     }
-    if (req.body.visible) {
-      update.visible = req.body.visible;
-    }
+
     try {
       const customLink = await CustomLink.findByIdAndUpdate(
         req.params.customLinkId,

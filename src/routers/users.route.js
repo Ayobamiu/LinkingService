@@ -106,6 +106,7 @@ router.post(
   ]),
 
   async (req, res) => {
+    console.log("req.files", req.files);
     if (req.files.profilePhoto) {
       req.user.profilePhoto = req.files.profilePhoto[0].location;
     }
